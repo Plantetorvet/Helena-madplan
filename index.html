@@ -1,28 +1,88 @@
-exports.handler = async (event) => {
-  if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌾 Helenas Glutenfri Køkken</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background:#f4faf7;
+  padding:40px;
+  max-width:700px;
+  margin:auto;
+}
+
+h1{
+  color:#1D9E75;
+}
+
+button{
+  background:#1D9E75;
+  color:white;
+  border:none;
+  padding:15px 25px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:18px;
+}
+
+button:hover{
+  background:#14795a;
+}
+
+#output{
+  margin-top:30px;
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  white-space:pre-wrap;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🌾 Helenas Glutenfri Køkken</h1>
+
+<p>Klik for at lave en glutenfri madplan.</p>
+
+<button onclick="generatePlan()">✨ Lav min madplan</button>
+
+<div id="output"></div>
+
+<script>
+async function generatePlan() {
+
+  document.getElementById('output').innerHTML =
+    '⏳ Genererer madplan...';
+
+  const prompt =
+    'Lav en glutenfri madplan for 3 dage på dansk';
 
   try {
-    const { prompt } = JSON.parse(event.body);
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
+
+    const response = await fetch('/api/generate-plan', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
       },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+      body:JSON.stringify({ prompt })
     });
-    const data = await res.json();
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify(data)
-    };
-  } catch (e) {
-    return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
+
+    const data = await response.json();
+
+    document.getElementById('output').innerHTML =
+      JSON.stringify(data, null, 2);
+
+  } catch(err){
+
+    document.getElementById('output').innerHTML =
+      'Fejl: ' + err.message;
   }
-};
+}
+</script>
+
+</body>
+</html>
