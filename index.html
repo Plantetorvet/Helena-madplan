@@ -235,7 +235,7 @@
       '"tip":"Et nyttigt tip til glutenfri madlavning"}';
 
     try {
-      var res = await fetch('/.netlify/functions/claude', {
+      var res = await fetch('/api/generate-plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: prompt })
