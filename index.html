@@ -74,8 +74,9 @@ async function generatePlan() {
     const data = await response.json();
 
     document.getElementById('output').innerHTML =
-      JSON.stringify(data, null, 2);
+  data.content?.[0]?.text || 'Der kom ikke noget svar.';
 
+    
   } catch(err){
 
     document.getElementById('output').innerHTML =
