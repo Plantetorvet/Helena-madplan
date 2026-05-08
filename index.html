@@ -72,9 +72,9 @@ async function generatePlan() {
     });
 
     const data = await response.json();
-
-    document.getElementById('output').innerHTML =
-      JSON.stringify(data, null, 2);
+    const text = data.content?.[0]?.text || 'Der kom ikke noget svar.';
+    document.getElementById('output').innerHTML = text.replace(/\n/g, '<br>');
+   
 
   } catch(err){
 
