@@ -1,57 +1,86 @@
 # Helenas Glutenfri Koekken
 
-En hjemmeside der genererer glutenfrie madplaner med indkoebsliste til danske supermarkeder.
+Madplan + ingrediens-scanner til familier med glutenallergi.
 
-## Funktioner
-- Vaelg 1-7 dage
-- Vaelg maaltider: morgenmad, frokost, madpakke, aftensmad, mellemmaltid
-- Opskrifter i simpelt sprog til boern og voksne
-- Interaktiv indkoebsliste (Netto, Lidl, Rema 1000)
-- Ingen gluten, maelk eller soja
+## Filer
+```
+index.html              Madplan-siden
+scanner.html            Scanner + produktliste
+api/
+  generate-plan.js      Genererer madplan (Anthropic)
+  scan.js               Scanner stregkode/ingredienser
+  scan-billede.js       Foto-scanning via Claude Vision
+  produkter.js          Gem produkter + reaktioner (Supabase)
+```
+
+## Deploy på Vercel (allerede opsat)
+Vercel gendeploy automatisk når du pusher til GitHub.
+
+## Miljøvariabler — tilføj i Vercel Dashboard
+Gaa til: vercel.com → dit projekt → Settings → Environment Variables
+
+### ANTHROPIC_API_KEY
+Din Anthropic-noegle fra console.anthropic.com
+
+### SUPABASE_URL og SUPABASE_ANON_KEY
+Fra Supabase-projektet (se nedenfor)
 
 ---
 
-## Sadan deployer du (gratis med Netlify)
+## Supabase opsaetning (gratis, 5 min)
 
-### Trin 1 — Laeg projektet paa GitHub
-1. Opret en gratis konto paa [github.com](https://github.com)
-2. Klik "New repository", giv det et navn (fx `helena-glutenfri`)
-3. Upload alle filerne fra denne ZIP
+### 1. Opret konto
+Gaa til supabase.com og opret gratis konto
 
-### Trin 2 — Forbind Netlify til GitHub
-1. Opret en gratis konto paa [netlify.com](https://netlify.com)
-2. Klik "Add new site" -> "Import an existing project"
-3. Vaelg GitHub og find dit repository
-4. Build settings lades tomme (ingen build-kommando behoeves)
-5. Klik "Deploy site"
+### 2. Opret nyt projekt
+Klik "New project" — vaelg et navn og en adgangskode
 
-### Trin 3 — Tilfoej din Anthropic API-noegle
-1. Gaa til [console.anthropic.com](https://console.anthropic.com) og opret en konto
-2. Gaa til "API Keys" og opret en noegle
-3. I Netlify: gaa til dit site -> Site configuration -> Environment variables
-4. Klik "Add a variable":
-   - Key:   `ANTHROPIC_API_KEY`
-   - Value: din noegle (starter med `sk-ant-...`)
-5. Klik "Save" — sitet genstarter automatisk
+### 3. Opret tabeller
+Gaa til "SQL Editor" og koer denne SQL:
 
-### Trin 4 — Aaben dit site
-Netlify giver dig et link som fx `https://helena-glutenfri.netlify.app`
-Det kan du dele med alle!
+```sql
+create table produkter (
+  id uuid default gen_random_uuid() primary key,
+  familie_id text not null,
+  barcode text,
+  navn text,
+  ingredienser text,
+  analyse jsonb,
+  har_reaktion boolean default false,
+  sidst_scannet timestamptz default now(),
+  created_at timestamptz default now(),
+  unique(familie_id, barcode)
+);
+
+create table reaktioner (
+  id uuid default gen_random_uuid() primary key,
+  familie_id text not null,
+  produkt_id uuid references produkter(id),
+  dato timestamptz default now(),
+  symptomer text,
+  alvorlighed text,
+  noter text
+);
+
+-- Aaben adgang (familiedeling uden login)
+alter table produkter enable row level security;
+alter table reaktioner enable row level security;
+create policy "Familie adgang produkter" on produkter for all using (true);
+create policy "Familie adgang reaktioner" on reaktioner for all using (true);
+```
+
+### 4. Hent dine nogler
+Gaa til Settings → API og kopieer:
+- Project URL → SUPABASE_URL
+- anon public key → SUPABASE_ANON_KEY
+
+### 5. Tilfoej i Vercel
+Gaa til vercel.com → dit projekt → Settings → Environment Variables
+Tilfoej SUPABASE_URL og SUPABASE_ANON_KEY
 
 ---
 
-## Fil-struktur
-```
-helena-glutenfri/
-  index.html                  <- Selve hjemmesiden
-  netlify.toml                <- Netlify konfiguration
-  netlify/
-    functions/
-      claude.js               <- Backend-funktion (kalder Anthropic API)
-  README.md                   <- Denne fil
-```
-
-## Kostmaessige regler (fra Allergi- og Lungeklinikken Aarhus)
-Ingen: hvede, rug, byg, spelt, alm. havre, maelk, smoer, floede, ost, soja
-Tilladt: ris, quinoa, boghvede, hirse, glutenfri havregryn, kartofler, majs,
-         mandelmalk, kokosmalk, havremalk, koed, fisk, aeg, groentsager, noedder
+## Familiedeling
+Siden genererer automatisk et familie-ID.
+Kopieer linket fra "Mine produkter" og del med familien.
+Alle med linket ser de samme produkter og reaktioner.
