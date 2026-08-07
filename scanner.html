@@ -2,6 +2,12 @@
 <html lang="da">
 <head>
 <meta charset="UTF-8">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1D9E75">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Helena">
+  <link rel="apple-touch-icon" href="/icon-192.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Helena Scanner</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -411,7 +417,7 @@ async function gemProdukt() {
           barcode: aktivtResultat.barcode || null,
           navn: aktivtResultat.produktNavn || 'Ukendt produkt',
           ingredienser: aktivtResultat.ingredienser,
-          analyse: aktivtResultat.analyse
+          analyse: aktivtResultat.analyse  // gemmes som analyse_data i DB
         }
       })
     });
@@ -535,5 +541,10 @@ async function analyserSammenfald() {
 }
 </script>
 <script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+  }
+</script>
 </body>
 </html>
