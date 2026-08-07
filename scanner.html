@@ -51,6 +51,8 @@
   .scan-corner-bl{position:absolute;bottom:0;left:0;width:28px;height:28px;border-color:#fff;border-style:solid;border-width:0 0 4px 4px;border-radius:4px 0 0 4px;}
   .scan-line{position:absolute;left:5%;width:90%;height:2px;background:rgba(29,158,117,0.9);animation:scanline 2s ease-in-out infinite;}
   @keyframes scanline{0%,100%{top:10%;}50%{top:88%;}}
+  .scan-line.paused{animation-play-state:paused;opacity:0.4;}
+  .scan-line.hit{background:rgba(255,255,100,0.95);transition:background 0.1s;}
   .scan-shadow{position:absolute;inset:0;box-shadow:0 0 0 2000px rgba(0,0,0,0.4);}
   .scan-label{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);color:white;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap;}
 
@@ -93,6 +95,7 @@
   .loading{text-align:center;padding:24px;display:none;}
   .spinner{display:inline-block;width:28px;height:28px;border:3px solid var(--green-mid);border-top-color:var(--green);border-radius:50%;animation:spin 0.7s linear infinite;margin-bottom:8px;}
   @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes fadeout{0%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(1.5);}}
   .loading p{font-size:14px;color:var(--text-muted);}
 
   /* PRODUKTLISTE */
@@ -136,7 +139,7 @@
 <body>
 
 <div class="header">
-  <span class="header-logo">&#127806; Helena</span>
+  <span class="header-logo">&#127806; Helena <span style="font-size:10px;background:#E1F5EE;color:#085041;padding:2px 6px;border-radius:10px;font-family:monospace;">v4</span></span>
   <div class="nav-tabs">
     <a href="index.html" class="nav-tab">Madplan</a>
     <button class="nav-tab active" onclick="visSektion('scanner')">Scanner</button>
@@ -151,16 +154,19 @@
     <div class="scan-sub">Scan stregkoden eller tag et foto af ingredienslisten — vi tjekker om det er sikkert for Helena!</div>
 
     <div class="camera-wrap" id="cameraWrap" style="display:none;">
-      <video id="videoEl" autoplay playsinline muted></video>
+      <video id="videoEl" autoplay playsinline muted onclick="tapFocus(event)"></video>
       <div class="scan-overlay">
         <div class="scan-shadow"></div>
         <div class="scan-frame">
           <div class="scan-corner-tr"></div>
           <div class="scan-corner-bl"></div>
-          <div class="scan-line"></div>
+          <div class="scan-line" id="scanLine"></div>
         </div>
-        <span class="scan-label">Hold stregkoden inden for rammen</span>
+        <span class="scan-label" id="scanLabel">Hold stregkoden inden for rammen</span>
       </div>
+      <button id="manuelScanBtn" onclick="manuelScan()" style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(29,158,117,0.92);color:white;border:none;border-radius:24px;padding:12px 28px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;z-index:10;display:none;box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+        📸 Tag billede nu
+      </button>
     </div>
 
     <button class="btn btn-green" id="startScanBtn" onclick="startKamera()">&#128247; Start stregkode-scanner</button>
@@ -277,21 +283,83 @@ async function startKamera() {
     document.getElementById('startScanBtn').style.display = 'none';
     document.getElementById('stopScanBtn').style.display = 'block';
 
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: 'environment',
+        focusMode: 'continuous',
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      }
+    });
+
+    // Aktiver autofokus hvis understøttet
+    const track = stream.getVideoTracks()[0];
+    if (track && track.getCapabilities) {
+      const caps = track.getCapabilities();
+      if (caps.focusMode && caps.focusMode.includes('continuous')) {
+        await track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
+      }
+    }
     const video = document.getElementById('videoEl');
     video.srcObject = stream;
+
+    // Vis "Tag billede nu" knap efter 3 sekunder som fallback
+    setTimeout(() => {
+      const btn = document.getElementById('manuelScanBtn');
+      if (btn) btn.style.display = 'block';
+    }, 3000);
 
     codeReader = new ZXing.BrowserMultiFormatReader();
     codeReader.decodeFromVideoElement(video, (result, err) => {
       if (result) {
-        stopKamera();
-        scanMedBarcode(result.getText());
+        // Visuel feedback
+        const line = document.getElementById('scanLine');
+        if (line) line.classList.add('hit');
+        const label = document.getElementById('scanLabel');
+        if (label) label.textContent = '✓ Stregkode fundet!';
+        setTimeout(() => {
+          stopKamera();
+          scanMedBarcode(result.getText());
+        }, 300);
       }
     });
   } catch(e) {
     alert('Kamera ikke tilgængeligt: ' + e.message);
     stopKamera();
   }
+}
+
+async function tapFocus(e) {
+  if (!stream) return;
+  const track = stream.getVideoTracks()[0];
+  if (!track) return;
+  const caps = track.getCapabilities ? track.getCapabilities() : {};
+  if (caps.focusMode && caps.pointOfInterest) {
+    const rect = e.target.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    try {
+      await track.applyConstraints({ advanced: [{ focusMode: 'manual', pointOfInterest: { x, y } }] });
+      // Vis fokuspunkt
+      const dot = document.createElement('div');
+      dot.style.cssText = `position:fixed;left:${e.clientX-20}px;top:${e.clientY-20}px;width:40px;height:40px;border:2px solid #1D9E75;border-radius:50%;pointer-events:none;z-index:999;animation:fadeout 0.8s forwards;`;
+      document.body.appendChild(dot);
+      setTimeout(() => dot.remove(), 800);
+    } catch(e) {}
+  }
+}
+
+function manuelScan() {
+  // Tag et stillbillede fra video og send til Claude Vision
+  const video = document.getElementById('videoEl');
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  const base64 = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+  stopKamera();
+  visLoading('Analyserer billede...');
+  kalApiMedBillede(base64);
 }
 
 function stopKamera() {
