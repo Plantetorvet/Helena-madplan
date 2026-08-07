@@ -40,10 +40,18 @@
   .scan-sub{font-size:13px;color:var(--text-muted);margin-bottom:16px;line-height:1.5;}
 
   /* KAMERA */
-  .camera-wrap{position:relative;background:#000;border-radius:12px;overflow:hidden;margin-bottom:14px;aspect-ratio:4/3;}
+  .camera-wrap{position:relative;background:#000;border-radius:12px;overflow:hidden;margin-bottom:14px;aspect-ratio:1/1;max-height:75vw;}
   #videoEl{width:100%;height:100%;object-fit:cover;display:block;}
   .scan-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
-  .scan-frame{width:70%;aspect-ratio:3/1;border:3px solid rgba(255,255,255,0.8);border-radius:8px;box-shadow:0 0 0 2000px rgba(0,0,0,0.35);}
+  .scan-frame{width:85%;aspect-ratio:2/1;border:none;border-radius:8px;position:relative;}
+  .scan-frame::before,.scan-frame::after{content:"";position:absolute;width:28px;height:28px;border-color:#fff;border-style:solid;}
+  .scan-frame::before{top:0;left:0;border-width:4px 0 0 4px;border-radius:4px 0 0 4px;}
+  .scan-frame::after{bottom:0;right:0;border-width:0 4px 4px 0;border-radius:0 0 4px 4px;}
+  .scan-corner-tr{position:absolute;top:0;right:0;width:28px;height:28px;border-color:#fff;border-style:solid;border-width:4px 4px 0 0;border-radius:0 4px 4px 0;}
+  .scan-corner-bl{position:absolute;bottom:0;left:0;width:28px;height:28px;border-color:#fff;border-style:solid;border-width:0 0 4px 4px;border-radius:4px 0 0 4px;}
+  .scan-line{position:absolute;left:5%;width:90%;height:2px;background:rgba(29,158,117,0.9);animation:scanline 2s ease-in-out infinite;}
+  @keyframes scanline{0%,100%{top:10%;}50%{top:88%;}}
+  .scan-shadow{position:absolute;inset:0;box-shadow:0 0 0 2000px rgba(0,0,0,0.4);}
   .scan-label{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);color:white;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap;}
 
   .btn{width:100%;padding:14px;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;margin-bottom:8px;}
@@ -118,6 +126,11 @@
   .tom-liste-emoji{font-size:48px;display:block;margin-bottom:12px;}
 
   .ocr-input{width:100%;min-height:100px;border:1.5px solid var(--border);border-radius:8px;padding:10px;font-family:'Nunito',sans-serif;font-size:13px;margin-bottom:8px;resize:vertical;}
+  .btn-foto{background:white;color:var(--green);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;}
+  .btn-foto:hover{background:var(--green-light);}
+  .or-divider{text-align:center;color:var(--text-muted);font-size:12px;font-weight:700;margin:4px 0;position:relative;}
+  .or-divider::before,.or-divider::after{content:"";position:absolute;top:50%;width:42%;height:1px;background:var(--border);}
+  .or-divider::before{left:0;}.or-divider::after{right:0;}
 </style>
 </head>
 <body>
@@ -140,14 +153,20 @@
     <div class="camera-wrap" id="cameraWrap" style="display:none;">
       <video id="videoEl" autoplay playsinline muted></video>
       <div class="scan-overlay">
-        <div class="scan-frame"></div>
+        <div class="scan-shadow"></div>
+        <div class="scan-frame">
+          <div class="scan-corner-tr"></div>
+          <div class="scan-corner-bl"></div>
+          <div class="scan-line"></div>
+        </div>
         <span class="scan-label">Hold stregkoden inden for rammen</span>
       </div>
     </div>
 
-    <button class="btn btn-green" id="startScanBtn" onclick="startKamera()">&#128247; Scan stregkode</button>
-    <button class="btn btn-outline" id="stopScanBtn" style="display:none;" onclick="stopKamera()">Stop kamera</button>
-    <button class="btn btn-outline" onclick="document.getElementById('fotoInput').click()">&#128444;&#65039; Tag foto af ingrediensliste</button>
+    <button class="btn btn-green" id="startScanBtn" onclick="startKamera()">&#128247; Start stregkode-scanner</button>
+    <button class="btn btn-outline" id="stopScanBtn" style="display:none;" onclick="stopKamera()">&#10005; Luk kamera</button>
+    <div class="or-divider">eller</div>
+    <button class="btn btn-foto" onclick="document.getElementById('fotoInput').click()">&#128247; Foto af ingrediensliste</button>
     <input type="file" id="fotoInput" accept="image/*" capture="environment" onchange="behandlFoto(this)">
 
     <div style="margin-top:8px;">
