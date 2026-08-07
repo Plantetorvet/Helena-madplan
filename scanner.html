@@ -2,244 +2,238 @@
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#1D9E75">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Helena">
-  <link rel="apple-touch-icon" href="/icon-192.svg">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1D9E75">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Helena">
+<link rel="apple-touch-icon" href="/icon-192.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Helena Scanner</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --green:#1D9E75;--green-light:#E1F5EE;--green-mid:#9FE1CB;
-    --green-dark:#085041;--green-deep:#0F6E56;
-    --red:#E53935;--red-light:#FFEBEE;
-    --amber:#F59E0B;--amber-light:#FFFBEB;
-    --text:#1a1a1a;--text-muted:#666;
-    --bg:#f7faf9;--card:#ffffff;--border:rgba(0,0,0,0.09);--radius:14px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:480px;margin:0 auto;}
+:root{--green:#1D9E75;--green-light:#E1F5EE;--green-mid:#9FE1CB;--green-dark:#085041;--green-deep:#0F6E56;--red:#E53935;--red-light:#FFEBEE;--amber:#F59E0B;--amber-light:#FFFBEB;--text:#1a1a1a;--text-muted:#666;--bg:#f7faf9;--card:#ffffff;--border:rgba(0,0,0,0.09);--radius:14px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:480px;margin:0 auto;}
+.header{background:white;border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.header-logo{font-family:'Fredoka One',cursive;font-size:18px;color:var(--green-dark);}
+.nav-tabs{display:flex;gap:4px;}
+.nav-tab{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--text-muted);text-decoration:none;}
+.nav-tab.active{background:var(--green);color:white;border-color:var(--green);}
+.section{display:none;padding:16px;}
+.section.active{display:block;}
+.scan-card{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:14px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.scan-title{font-family:'Fredoka One',cursive;font-size:22px;color:var(--green-dark);margin-bottom:4px;}
+.scan-sub{font-size:13px;color:var(--text-muted);margin-bottom:16px;line-height:1.5;}
 
-  /* HEADER */
-  .header{background:white;border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-  .header-logo{font-family:'Fredoka One',cursive;font-size:18px;color:var(--green-dark);}
-  .nav-tabs{display:flex;gap:4px;}
-  .nav-tab{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--text-muted);text-decoration:none;}
-  .nav-tab.active{background:var(--green);color:white;border-color:var(--green);}
+/* KAMERA */
+.camera-wrap{position:relative;background:#000;border-radius:16px;overflow:hidden;margin-bottom:14px;aspect-ratio:1/1;display:none;}
+#videoEl{width:100%;height:100%;object-fit:cover;display:block;}
+.scan-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.scan-shadow{position:absolute;inset:0;box-shadow:0 0 0 2000px rgba(0,0,0,0.5);}
+.scan-status{position:absolute;top:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);color:white;font-size:13px;font-weight:700;padding:6px 16px;border-radius:20px;white-space:nowrap;z-index:3;transition:all 0.3s;}
+.scan-status.groen{background:rgba(29,158,117,0.92);}
+.scan-frame{width:82%;aspect-ratio:2/1;position:relative;z-index:2;}
+.hjorne{position:absolute;width:30px;height:30px;border-color:white;border-style:solid;transition:border-color 0.3s;}
+.hjorne.tl{top:0;left:0;border-width:4px 0 0 4px;border-radius:6px 0 0 6px;}
+.hjorne.tr{top:0;right:0;border-width:4px 4px 0 0;border-radius:0 6px 6px 0;}
+.hjorne.bl{bottom:0;left:0;border-width:0 0 4px 4px;border-radius:6px 0 0 6px;}
+.hjorne.br{bottom:0;right:0;border-width:0 4px 4px 0;border-radius:0 0 6px 6px;}
+.scan-frame.klar .hjorne{border-color:#1D9E75;}
+.scan-linje{position:absolute;left:4%;width:92%;height:2px;background:rgba(29,158,117,0.85);top:50%;display:none;}
+.scan-linje.aktiv{display:block;animation:scanline 1.5s ease-in-out infinite;}
+@keyframes scanline{0%,100%{top:8%;}50%{top:88%;}}
+.scan-btn-wrap{position:absolute;bottom:18px;left:0;right:0;display:flex;justify-content:center;z-index:3;}
+.scan-nu-btn{background:rgba(29,158,117,0.95);color:white;border:3px solid rgba(255,255,255,0.4);border-radius:30px;padding:14px 40px;font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.4);transform:scale(0.85);opacity:0.4;transition:all 0.3s;pointer-events:none;}
+.scan-nu-btn.aktiv{transform:scale(1);opacity:1;pointer-events:auto;animation:puls 1.8s ease-in-out infinite;}
+@keyframes puls{0%,100%{box-shadow:0 4px 20px rgba(0,0,0,0.4);}50%{box-shadow:0 4px 30px rgba(29,158,117,0.8),0 0 0 8px rgba(29,158,117,0.15);}}
+.fokus-ring{position:fixed;border:2px solid var(--green);border-radius:50%;width:44px;height:44px;pointer-events:none;z-index:999;animation:fade-ring 0.7s forwards;}
+@keyframes fade-ring{0%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(1.6);}}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-  /* SEKTIONER */
-  .section{display:none;padding:16px;}
-  .section.active{display:block;}
+/* KNAPPER */
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;margin-bottom:8px;}
+.btn-green{background:var(--green);color:white;box-shadow:0 4px 12px rgba(29,158,117,0.3);}
+.btn-green:hover{background:var(--green-deep);}
+.btn-outline{background:white;color:var(--green);border:2px solid var(--green);}
+.btn-red{background:var(--red);color:white;}
+.btn-sm{padding:8px 16px;width:auto;font-size:13px;border-radius:20px;margin-bottom:0;}
+.btn:disabled{opacity:0.5;cursor:not-allowed;}
+#fotoInput{display:none;}
+.or-divider{text-align:center;color:var(--text-muted);font-size:12px;font-weight:700;margin:6px 0;position:relative;}
+.or-divider::before,.or-divider::after{content:"";position:absolute;top:50%;width:42%;height:1px;background:var(--border);}
+.or-divider::before{left:0;}.or-divider::after{right:0;}
 
-  /* SCANNER */
-  .scan-card{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:14px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
-  .scan-title{font-family:'Fredoka One',cursive;font-size:22px;color:var(--green-dark);margin-bottom:4px;}
-  .scan-sub{font-size:13px;color:var(--text-muted);margin-bottom:16px;line-height:1.5;}
+/* RESULTAT */
+.result-box{border-radius:var(--radius);padding:16px;margin-bottom:14px;display:none;}
+.result-ok{background:#E8F5E9;border:2px solid #66BB6A;}
+.result-advarsel{background:var(--amber-light);border:2px solid var(--amber);}
+.result-stop{background:var(--red-light);border:2px solid var(--red);}
+.result-icon{font-size:40px;text-align:center;display:block;margin-bottom:8px;}
+.result-karakter{font-family:'Fredoka One',cursive;font-size:24px;text-align:center;margin-bottom:6px;}
+.result-ok .result-karakter{color:#2E7D32;}
+.result-advarsel .result-karakter{color:#B45309;}
+.result-stop .result-karakter{color:var(--red);}
+.result-forklaring{font-size:14px;line-height:1.6;margin-bottom:10px;}
+.advarsel-item{background:rgba(0,0,0,0.06);border-radius:6px;padding:6px 10px;font-size:13px;margin-bottom:4px;}
+.produkt-navn{font-weight:800;font-size:15px;margin-bottom:4px;}
+.ingredienser-tekst{font-size:11px;color:var(--text-muted);line-height:1.5;padding:8px;background:rgba(0,0,0,0.03);border-radius:6px;max-height:80px;overflow-y:auto;margin-top:6px;}
+.gem-wrap{display:none;margin-bottom:14px;}
+.loading{text-align:center;padding:28px;display:none;}
+.spinner{display:inline-block;width:30px;height:30px;border:3px solid var(--green-mid);border-top-color:var(--green);border-radius:50%;animation:spin 0.7s linear infinite;margin-bottom:10px;}
+.loading p{font-size:14px;color:var(--text-muted);}
 
-  /* KAMERA */
-  .camera-wrap{position:relative;background:#000;border-radius:12px;overflow:hidden;margin-bottom:14px;aspect-ratio:1/1;max-height:75vw;}
-  #videoEl{width:100%;height:100%;object-fit:cover;display:block;}
-  .scan-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
-  .scan-frame{width:85%;aspect-ratio:2/1;border:none;border-radius:8px;position:relative;}
-  .scan-frame::before,.scan-frame::after{content:"";position:absolute;width:28px;height:28px;border-color:#fff;border-style:solid;}
-  .scan-frame::before{top:0;left:0;border-width:4px 0 0 4px;border-radius:4px 0 0 4px;}
-  .scan-frame::after{bottom:0;right:0;border-width:0 4px 4px 0;border-radius:0 0 4px 4px;}
-  .scan-corner-tr{position:absolute;top:0;right:0;width:28px;height:28px;border-color:#fff;border-style:solid;border-width:4px 4px 0 0;border-radius:0 4px 4px 0;}
-  .scan-corner-bl{position:absolute;bottom:0;left:0;width:28px;height:28px;border-color:#fff;border-style:solid;border-width:0 0 4px 4px;border-radius:4px 0 0 4px;}
-  .scan-line{position:absolute;left:5%;width:90%;height:2px;background:rgba(29,158,117,0.9);animation:scanline 2s ease-in-out infinite;}
-  @keyframes scanline{0%,100%{top:10%;}50%{top:88%;}}
-  .scan-line.paused{animation-play-state:paused;opacity:0.4;}
-  .scan-line.hit{background:rgba(255,255,100,0.95);transition:background 0.1s;}
-  .scan-shadow{position:absolute;inset:0;box-shadow:0 0 0 2000px rgba(0,0,0,0.4);}
-  .scan-label{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);color:white;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap;}
+/* REAKTION */
+.reaktion-wrap{display:none;background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid var(--border);margin-bottom:14px;}
+.reaktion-input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px;font-family:'Nunito',sans-serif;font-size:14px;margin-bottom:8px;resize:vertical;}
+.alvorlighed-row{display:flex;gap:8px;margin-bottom:10px;}
+.alv-btn{flex:1;padding:8px;border:2px solid var(--border);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:white;color:var(--text-muted);}
+.alv-btn.selected{border-color:var(--red);background:var(--red-light);color:var(--red);}
 
-  .btn{width:100%;padding:14px;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;margin-bottom:8px;}
-  .btn-green{background:var(--green);color:white;box-shadow:0 4px 12px rgba(29,158,117,0.3);}
-  .btn-green:hover{background:var(--green-deep);}
-  .btn-outline{background:white;color:var(--green);border:2px solid var(--green);}
-  .btn-outline:hover{background:var(--green-light);}
-  .btn-red{background:var(--red);color:white;}
-  .btn-sm{padding:8px 16px;width:auto;font-size:13px;border-radius:20px;margin-bottom:0;}
-  .btn:disabled{opacity:0.5;cursor:not-allowed;}
-  #fotoInput{display:none;}
-
-  /* RESULTAT */
-  .result-box{border-radius:var(--radius);padding:16px;margin-bottom:14px;display:none;}
-  .result-ok{background:#E8F5E9;border:2px solid #66BB6A;}
-  .result-advarsel{background:var(--amber-light);border:2px solid var(--amber);}
-  .result-stop{background:var(--red-light);border:2px solid var(--red);}
-  .result-icon{font-size:36px;text-align:center;display:block;margin-bottom:8px;}
-  .result-karakter{font-family:'Fredoka One',cursive;font-size:22px;text-align:center;margin-bottom:6px;}
-  .result-ok .result-karakter{color:#2E7D32;}
-  .result-advarsel .result-karakter{color:#B45309;}
-  .result-stop .result-karakter{color:var(--red);}
-  .result-forklaring{font-size:14px;line-height:1.6;margin-bottom:10px;}
-  .advarsel-liste{margin-top:8px;}
-  .advarsel-item{background:rgba(0,0,0,0.06);border-radius:6px;padding:6px 10px;font-size:13px;margin-bottom:4px;}
-  .produkt-navn{font-weight:800;font-size:15px;margin-bottom:4px;}
-  .ingredienser-tekst{font-size:11px;color:var(--text-muted);line-height:1.5;margin-top:6px;padding:8px;background:rgba(0,0,0,0.03);border-radius:6px;max-height:80px;overflow-y:auto;}
-
-  /* GEM KNAP */
-  .gem-wrap{display:none;margin-bottom:14px;}
-  .reaktion-wrap{display:none;background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid var(--border);margin-bottom:14px;}
-  .reaktion-titel{font-weight:800;font-size:15px;margin-bottom:12px;}
-  .reaktion-input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px;font-family:'Nunito',sans-serif;font-size:14px;margin-bottom:8px;resize:vertical;}
-  .alvorlighed-row{display:flex;gap:8px;margin-bottom:8px;}
-  .alv-btn{flex:1;padding:8px;border:2px solid var(--border);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:white;color:var(--text-muted);}
-  .alv-btn.selected{border-color:var(--red);background:var(--red-light);color:var(--red);}
-
-  /* LOADING */
-  .loading{text-align:center;padding:24px;display:none;}
-  .spinner{display:inline-block;width:28px;height:28px;border:3px solid var(--green-mid);border-top-color:var(--green);border-radius:50%;animation:spin 0.7s linear infinite;margin-bottom:8px;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  @keyframes fadeout{0%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(1.5);}}
-  .loading p{font-size:14px;color:var(--text-muted);}
-
-  /* PRODUKTLISTE */
-  .liste-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
-  .liste-titel{font-family:'Fredoka One',cursive;font-size:20px;color:var(--green-dark);}
-  .produkt-kort{background:var(--card);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;border:1px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,0.04);}
-  .produkt-kort.har-reaktion{border-left:4px solid var(--red);}
-  .produkt-kort-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
-  .produkt-kort-navn{font-weight:800;font-size:15px;}
-  .status-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;}
-  .badge-ok{background:#E8F5E9;color:#2E7D32;}
-  .badge-advarsel{background:var(--amber-light);color:#B45309;}
-  .badge-stop{background:var(--red-light);color:var(--red);}
-  .produkt-dato{font-size:11px;color:var(--text-muted);margin-bottom:6px;}
-  .reaktion-tag{font-size:11px;background:var(--red-light);color:var(--red);padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:6px;font-weight:700;}
-  .produkt-kort-actions{display:flex;gap:8px;margin-top:8px;}
-
-  /* ANALYSE */
-  .analyse-kort{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:14px;border:1px solid var(--border);}
-  .analyse-titel{font-family:'Fredoka One',cursive;font-size:18px;color:var(--green-dark);margin-bottom:12px;}
-  .synder-item{background:var(--red-light);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:14px;color:var(--red);font-weight:600;}
-  .sammenfald-item{background:var(--amber-light);border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:13px;color:#92400E;}
-  .anbefaling-box{background:var(--green-light);border-radius:8px;padding:12px;margin-top:10px;font-size:14px;color:var(--green-dark);line-height:1.6;}
-
-  /* FAMILIE ID */
-  .familie-bar{background:var(--green-light);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;font-size:12px;}
-  .familie-id-tekst{font-weight:700;color:var(--green-dark);}
-  .kopier-btn{background:var(--green);color:white;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;}
-
-  .tom-liste{text-align:center;padding:40px 20px;color:var(--text-muted);}
-  .tom-liste-emoji{font-size:48px;display:block;margin-bottom:12px;}
-
-  .ocr-input{width:100%;min-height:100px;border:1.5px solid var(--border);border-radius:8px;padding:10px;font-family:'Nunito',sans-serif;font-size:13px;margin-bottom:8px;resize:vertical;}
-  .btn-foto{background:white;color:var(--green);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;}
-  .btn-foto:hover{background:var(--green-light);}
-  .or-divider{text-align:center;color:var(--text-muted);font-size:12px;font-weight:700;margin:4px 0;position:relative;}
-  .or-divider::before,.or-divider::after{content:"";position:absolute;top:50%;width:42%;height:1px;background:var(--border);}
-  .or-divider::before{left:0;}.or-divider::after{right:0;}
+/* LISTE */
+.familie-bar{background:var(--green-light);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;font-size:12px;}
+.familie-id-tekst{font-weight:700;color:var(--green-dark);}
+.kopier-btn{background:var(--green);color:white;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;}
+.liste-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.liste-titel{font-family:'Fredoka One',cursive;font-size:20px;color:var(--green-dark);}
+.produkt-kort{background:var(--card);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;border:1px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,0.04);}
+.produkt-kort.har-reaktion{border-left:4px solid var(--red);}
+.produkt-kort-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.produkt-kort-navn{font-weight:800;font-size:15px;}
+.status-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.badge-ok{background:#E8F5E9;color:#2E7D32;}
+.badge-advarsel{background:var(--amber-light);color:#B45309;}
+.badge-stop{background:var(--red-light);color:var(--red);}
+.produkt-dato{font-size:11px;color:var(--text-muted);margin-bottom:6px;}
+.reaktion-tag{font-size:11px;background:var(--red-light);color:var(--red);padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:6px;font-weight:700;}
+.tom-liste{text-align:center;padding:40px 20px;color:var(--text-muted);}
+.tom-liste-emoji{font-size:48px;display:block;margin-bottom:12px;}
+.analyse-kort{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:14px;border:1px solid var(--border);display:none;}
+.analyse-titel{font-family:'Fredoka One',cursive;font-size:18px;color:var(--green-dark);margin-bottom:12px;}
+.synder-item{background:var(--red-light);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:14px;color:var(--red);font-weight:600;}
+.sammenfald-item{background:var(--amber-light);border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:13px;color:#92400E;}
+.anbefaling-box{background:var(--green-light);border-radius:8px;padding:12px;margin-top:10px;font-size:14px;color:var(--green-dark);line-height:1.6;}
+.ocr-input{width:100%;min-height:90px;border:1.5px solid var(--border);border-radius:8px;padding:10px;font-family:'Nunito',sans-serif;font-size:13px;margin-bottom:8px;resize:vertical;}
+.skarphed-tip{background:#1a1a1a;color:white;border-radius:12px;padding:12px 16px;margin-bottom:10px;font-size:13px;line-height:1.7;display:none;}
+.skarphed-tip.vis{display:block;}
+.tip-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:4px;}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <span class="header-logo">&#127806; Helena <span style="font-size:10px;background:#E1F5EE;color:#085041;padding:2px 6px;border-radius:10px;font-family:monospace;">v4</span></span>
+  <span class="header-logo">&#127806; Helena <span style="font-size:10px;background:#E1F5EE;color:#085041;padding:2px 6px;border-radius:10px;font-family:monospace;">v7</span></span>
   <div class="nav-tabs">
     <a href="index.html" class="nav-tab">Madplan</a>
-    <button class="nav-tab active" onclick="visSektion('scanner')">Scanner</button>
-    <button class="nav-tab" onclick="visSektion('liste')">Mine produkter</button>
+    <button class="nav-tab active" onclick="visSektion('scanner',event)">Scanner</button>
+    <button class="nav-tab" onclick="visSektion('liste',event)">Mine produkter</button>
   </div>
 </div>
 
-<!-- SCANNER SEKTION -->
+<!-- SCANNER -->
 <div class="section active" id="sek-scanner">
   <div class="scan-card">
     <div class="scan-title">&#128247; Scan et produkt</div>
-    <div class="scan-sub">Scan stregkoden eller tag et foto af ingredienslisten — vi tjekker om det er sikkert for Helena!</div>
+    <div class="scan-sub">Start kameraet, placer stregkoden i rammen og tryk <strong>Scan nu</strong> — eller tag et foto af ingredienslisten.</div>
 
-    <div class="camera-wrap" id="cameraWrap" style="display:none;">
-      <video id="videoEl" autoplay playsinline muted onclick="tapFocus(event)"></video>
+    <!-- KAMERA -->
+    <div class="camera-wrap" id="cameraWrap">
+      <video id="videoEl" autoplay playsinline muted onclick="tapFokus(event)"></video>
       <div class="scan-overlay">
         <div class="scan-shadow"></div>
-        <div class="scan-frame">
-          <div class="scan-corner-tr"></div>
-          <div class="scan-corner-bl"></div>
-          <div class="scan-line" id="scanLine"></div>
+        <span class="scan-status" id="scanStatus">&#128247; Kamera starter...</span>
+        <div id="afstandGuide" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:4;text-align:center;pointer-events:none;">
+          <div style="background:rgba(0,0,0,0.7);color:white;border-radius:12px;padding:10px 16px;font-size:13px;font-weight:700;line-height:1.8;">
+            <div id="afstandTekst">📏 Hold 15-20 cm fra produktet</div>
+            <div style="margin-top:6px;display:flex;align-items:center;gap:8px;justify-content:center;">
+              <span style="font-size:11px;opacity:0.8;">For tæt</span>
+              <div style="width:80px;height:6px;background:rgba(255,255,255,0.2);border-radius:3px;overflow:hidden;">
+                <div id="afstandBar" style="height:100%;width:50%;background:#1D9E75;border-radius:3px;transition:all 0.3s;"></div>
+              </div>
+              <span style="font-size:11px;opacity:0.8;">For langt</span>
+            </div>
+          </div>
         </div>
-        <span class="scan-label" id="scanLabel">Hold stregkoden inden for rammen</span>
+        <div class="scan-frame" id="scanFrame">
+          <div class="hjorne tl"></div>
+          <div class="hjorne tr"></div>
+          <div class="hjorne bl"></div>
+          <div class="hjorne br"></div>
+          <div class="scan-linje" id="scanLinje"></div>
+        </div>
+        <div class="scan-btn-wrap">
+          <button class="scan-nu-btn" id="scanNuBtn" onclick="startScanning()">&#128247; Scan nu</button>
+        </div>
       </div>
-      <button id="manuelScanBtn" onclick="manuelScan()" style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(29,158,117,0.92);color:white;border:none;border-radius:24px;padding:12px 28px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;z-index:10;display:none;box-shadow:0 4px 16px rgba(0,0,0,0.3);">
-        📸 Tag billede nu
-      </button>
     </div>
 
-    <button class="btn btn-green" id="startScanBtn" onclick="startKamera()">&#128247; Start stregkode-scanner</button>
-    <button class="btn btn-outline" id="stopScanBtn" style="display:none;" onclick="stopKamera()">&#10005; Luk kamera</button>
+    <div class="skarphed-tip" id="skarphedTip">
+      <div class="tip-row">📏 <span><strong>Afstand:</strong> Hold telefonen 15–20 cm fra stregkoden</span></div>
+      <div class="tip-row">💡 <span><strong>Lys:</strong> Sørg for godt lys — undgå skygger på produktet</span></div>
+      <div class="tip-row">🤚 <span><strong>Hold stille:</strong> Støt albuen mod kroppen for et stabilt billede</span></div>
+      <div class="tip-row">📦 <span><strong>Stregkode:</strong> Hold den vandret i rammen</span></div>
+    </div>
+    <button class="btn btn-green" id="startBtn" onclick="startKamera()">&#128247; Start stregkode-scanner</button>
+    <button class="btn btn-outline" id="stopBtn" style="display:none;" onclick="stopKamera()">&#10005; Luk kamera</button>
     <div class="or-divider">eller</div>
-    <button class="btn btn-foto" onclick="document.getElementById('fotoInput').click()">&#128247; Foto af ingrediensliste</button>
+    <button class="btn btn-outline" onclick="document.getElementById('fotoInput').click()">&#128444; Foto af ingrediensliste</button>
     <input type="file" id="fotoInput" accept="image/*" capture="environment" onchange="behandlFoto(this)">
-
-    <div style="margin-top:8px;">
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;font-weight:700;">Eller indsæt ingredienser manuelt:</div>
+    <div style="margin-top:10px;">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;font-weight:700;">Eller skriv/indsæt ingredienser:</div>
       <textarea class="ocr-input" id="manuelInput" placeholder="Ingredienser: hvede, sukker, palmeolie..."></textarea>
       <button class="btn btn-outline" onclick="analysereManuel()">&#128270; Tjek ingredienser</button>
     </div>
   </div>
 
-  <div class="loading" id="loadingBox">
-    <div class="spinner"></div>
-    <p id="loadingTekst">Analyserer ingredienser...</p>
-  </div>
+  <div class="loading" id="loadingBox"><div class="spinner"></div><p id="loadingTekst">Analyserer...</p></div>
 
   <div class="result-box" id="resultBox">
     <span class="result-icon" id="resultIcon"></span>
     <div class="result-karakter" id="resultKarakter"></div>
     <div class="produkt-navn" id="resultProduktNavn"></div>
     <div class="result-forklaring" id="resultForklaring"></div>
-    <div class="advarsel-liste" id="resultAdvarsler"></div>
-    <details style="margin-top:8px;">
-      <summary style="font-size:12px;color:var(--text-muted);cursor:pointer;">Vis ingredienser</summary>
-      <div class="ingredienser-tekst" id="resultIngredienser"></div>
-    </details>
+    <div id="resultAdvarsler"></div>
+    <details style="margin-top:8px;"><summary style="font-size:12px;color:var(--text-muted);cursor:pointer;">Vis ingredienser</summary><div class="ingredienser-tekst" id="resultIngredienser"></div></details>
   </div>
 
   <div class="gem-wrap" id="gemWrap">
-    <button class="btn btn-green" onclick="gemProdukt()">&#10003; Gem produkt i min liste</button>
+    <button class="btn btn-green" onclick="gemProdukt()">&#10003; Gem i min produktliste</button>
   </div>
 
   <div class="reaktion-wrap" id="reaktionWrap">
-    <div class="reaktion-titel">&#128680; Registrer reaktion</div>
+    <div style="font-weight:800;font-size:15px;margin-bottom:12px;">&#128680; Registrer reaktion</div>
     <textarea class="reaktion-input" id="symptomInput" placeholder="Hvad skete der? (fx mavepine, udslæt, kløe...)"></textarea>
     <div class="alvorlighed-row">
       <button class="alv-btn" onclick="vaelgAlvorlighed('mild',this)">Mild</button>
       <button class="alv-btn" onclick="vaelgAlvorlighed('moderat',this)">Moderat</button>
       <button class="alv-btn" onclick="vaelgAlvorlighed('alvorlig',this)">Alvorlig</button>
     </div>
-    <button class="btn btn-red" onclick="gemReak tion()">Gem reaktion</button>
+    <button class="btn btn-red" onclick="gemReaktion()">Gem reaktion</button>
   </div>
 </div>
 
-<!-- PRODUKTLISTE SEKTION -->
+<!-- PRODUKTLISTE -->
 <div class="section" id="sek-liste">
   <div class="familie-bar">
     <div>
       <div style="font-size:11px;color:var(--text-muted);">Familie-ID (del med familien)</div>
       <div class="familie-id-tekst" id="familieIdVis"></div>
     </div>
-    <button class="kopier-btn" onclick="kopierFamilieId()">Kopier link</button>
+    <button class="kopier-btn" onclick="kopierLink()">Kopier link</button>
   </div>
-
   <div class="liste-header">
     <div class="liste-titel">Mine produkter</div>
-    <button class="btn btn-sm btn-outline" onclick="analyserSammenfald()" id="sammenfaldBtn" style="display:none;">&#128269; Find sammenfald</button>
+    <button class="btn btn-sm btn-outline" id="sammenfaldBtn" style="display:none;" onclick="analyserSammenfald()">&#128269; Find sammenfald</button>
   </div>
-
   <div id="produktListe"></div>
-
-  <div class="analyse-kort" id="analyseKort" style="display:none;">
+  <div class="analyse-kort" id="analyseKort">
     <div class="analyse-titel">&#128202; Reaktionsanalyse</div>
     <div id="analyseIndhold"></div>
   </div>
 </div>
 
-<!-- Gem-dialog -->
-<div id="gemDialog" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:flex-end;justify-content:center;">
+<!-- GEM-DIALOG -->
+<div id="gemDialog" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center;">
   <div style="background:white;border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:480px;">
     <div style="font-family:'Fredoka One',cursive;font-size:20px;color:var(--green-dark);margin-bottom:8px;">&#10003; Produkt gemt!</div>
     <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">Vil du registrere at dette produkt har givet en reaktion?</p>
@@ -250,169 +244,242 @@
 
 <script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
 <script>
-// Familie-ID: gem lokalt, kan deles via URL-parameter
-const params = new URLSearchParams(location.search);
-let FAMILIE_ID = params.get('familie') || localStorage.getItem('helena_familie_id');
-if (!FAMILIE_ID) {
-  FAMILIE_ID = 'fam_' + Math.random().toString(36).slice(2,10);
-  localStorage.setItem('helena_familie_id', FAMILIE_ID);
-}
+// --- FAMILIE ID ---
+const urlParams = new URLSearchParams(location.search);
+let FAMILIE_ID = urlParams.get('familie') || localStorage.getItem('helena_familie_id');
+if (!FAMILIE_ID) { FAMILIE_ID = 'fam_' + Math.random().toString(36).slice(2,10); localStorage.setItem('helena_familie_id', FAMILIE_ID); }
 document.getElementById('familieIdVis').textContent = FAMILIE_ID;
 
-function kopierFamilieId() {
+function kopierLink() {
   const url = location.origin + location.pathname + '?familie=' + FAMILIE_ID;
   navigator.clipboard.writeText(url).then(() => alert('Link kopieret! Del det med din familie.'));
 }
 
-// Navigation
-function visSektion(id) {
+// --- NAVIGATION ---
+function visSektion(id, event) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('sek-' + id).classList.add('active');
-  event.target.classList.add('active');
+  if (event) event.target.classList.add('active');
   if (id === 'liste') indlaesListe();
 }
 
-// Kamera og stregkode
-let codeReader = null;
+// --- KAMERA STATE ---
 let stream = null;
+let codeReader = null;
+let scanningAktiv = false;
+let aktivtResultat = null;
+let aktivtProduktId = null;
+let valgtAlvorlighed = 'mild';
 
+// --- START KAMERA (kun preview — scanner ikke endnu) ---
 async function startKamera() {
   try {
     document.getElementById('cameraWrap').style.display = 'block';
-    document.getElementById('startScanBtn').style.display = 'none';
-    document.getElementById('stopScanBtn').style.display = 'block';
+    document.getElementById('startBtn').style.display = 'none';
+    document.getElementById('stopBtn').style.display = 'block';
+    document.getElementById('skarphedTip').classList.add('vis');
+    scanningAktiv = false;
 
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: 'environment',
-        focusMode: 'continuous',
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      }
-    });
+    // Prøv først med zoom og høj opløsning
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { exact: 'environment' },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          focusMode: 'continuous',
+          zoom: 1.5
+        }
+      });
+    } catch(e) {
+      // Fallback uden zoom
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+    }
 
-    // Aktiver autofokus hvis understøttet
+    const video = document.getElementById('videoEl');
+    video.srcObject = stream;
+
+    // Autofokus
     const track = stream.getVideoTracks()[0];
     if (track && track.getCapabilities) {
       const caps = track.getCapabilities();
       if (caps.focusMode && caps.focusMode.includes('continuous')) {
-        await track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
+        try { await track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }); } catch(e) {}
       }
     }
-    const video = document.getElementById('videoEl');
-    video.srcObject = stream;
 
-    // Vis "Tag billede nu" knap efter 3 sekunder som fallback
-    setTimeout(() => {
-      const btn = document.getElementById('manuelScanBtn');
-      if (btn) btn.style.display = 'block';
-    }, 3000);
+    // Aktiver Scan nu-knap når video er klar
+    video.addEventListener('loadedmetadata', () => {
+      setTimeout(async () => {
+        document.getElementById('scanNuBtn').classList.add('aktiv');
+        document.getElementById('afstandGuide').style.display = 'block';
+        const s = document.getElementById('scanStatus');
+        s.textContent = '✅ Klar — tryk Scan nu';
+        s.classList.add('groen');
 
-    codeReader = new ZXing.BrowserMultiFormatReader();
-    codeReader.decodeFromVideoElement(video, (result, err) => {
-      if (result) {
-        // Visuel feedback
-        const line = document.getElementById('scanLine');
-        if (line) line.classList.add('hit');
-        const label = document.getElementById('scanLabel');
-        if (label) label.textContent = '✓ Stregkode fundet!';
-        setTimeout(() => {
-          stopKamera();
-          scanMedBarcode(result.getText());
-        }, 300);
-      }
-    });
+        // Prøv at sætte zoom hvis understøttet
+        const track = stream ? stream.getVideoTracks()[0] : null;
+        if (track && track.getCapabilities) {
+          const caps = track.getCapabilities();
+          if (caps.zoom) {
+            const zoomMin = caps.zoom.min;
+            const zoomMax = caps.zoom.max;
+            const zoomTarget = Math.min(zoomMin + (zoomMax - zoomMin) * 0.3, 2.0);
+            try {
+              await track.applyConstraints({ advanced: [{ zoom: zoomTarget }] });
+            } catch(e) {}
+          }
+        }
+      }, 800);
+    }, { once: true });
+
   } catch(e) {
     alert('Kamera ikke tilgængeligt: ' + e.message);
     stopKamera();
   }
 }
 
-async function tapFocus(e) {
+// --- TAP TO FOCUS ---
+async function tapFokus(e) {
+  // Vis fokusring uanset hvad
+  const ring = document.createElement('div');
+  ring.className = 'fokus-ring';
+  ring.style.left = (e.clientX - 22) + 'px';
+  ring.style.top = (e.clientY - 22) + 'px';
+  document.body.appendChild(ring);
+  setTimeout(() => ring.remove(), 700);
+
   if (!stream) return;
   const track = stream.getVideoTracks()[0];
-  if (!track) return;
-  const caps = track.getCapabilities ? track.getCapabilities() : {};
-  if (caps.focusMode && caps.pointOfInterest) {
-    const rect = e.target.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
-    try {
-      await track.applyConstraints({ advanced: [{ focusMode: 'manual', pointOfInterest: { x, y } }] });
-      // Vis fokuspunkt
-      const dot = document.createElement('div');
-      dot.style.cssText = `position:fixed;left:${e.clientX-20}px;top:${e.clientY-20}px;width:40px;height:40px;border:2px solid #1D9E75;border-radius:50%;pointer-events:none;z-index:999;animation:fadeout 0.8s forwards;`;
-      document.body.appendChild(dot);
-      setTimeout(() => dot.remove(), 800);
-    } catch(e) {}
+  if (!track || !track.getCapabilities) return;
+  try {
+    const caps = track.getCapabilities();
+    if (caps.focusMode && caps.focusMode.includes('manual') && caps.pointOfInterest) {
+      const rect = e.target.getBoundingClientRect();
+      await track.applyConstraints({
+        advanced: [{ focusMode: 'manual', pointOfInterest: {
+          x: (e.clientX - rect.left) / rect.width,
+          y: (e.clientY - rect.top) / rect.height
+        }}]
+      });
+      // Tilbage til autofokus efter 2 sekunder
+      setTimeout(async () => {
+        try { await track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }); } catch(e) {}
+      }, 2000);
+    }
+  } catch(e) { /* fokus ikke understøttet på denne enhed */ }
+}
+
+// --- START SCANNING (efter bruger trykker knap) ---
+async function startScanning() {
+  if (scanningAktiv) return;
+  scanningAktiv = true;
+
+  const btn = document.getElementById('scanNuBtn');
+  const linje = document.getElementById('scanLinje');
+  const status = document.getElementById('scanStatus');
+
+  btn.textContent = '⏳ Scanner...';
+  btn.classList.remove('aktiv');
+  linje.classList.add('aktiv');
+  status.textContent = '🔍 Søger efter stregkode...';
+  status.classList.remove('groen');
+
+  const video = document.getElementById('videoEl');
+  codeReader = new ZXing.BrowserMultiFormatReader(null, { tryHarder: true });
+
+  // Timeout: 8 sekunder — så tager vi et foto i stedet
+  const timeout = setTimeout(() => {
+    if (!scanningAktiv) return;
+    scanningAktiv = false;
+    if (codeReader) { try { codeReader.reset(); } catch(e) {} codeReader = null; }
+    linje.classList.remove('aktiv');
+    status.textContent = '📸 Tager foto i stedet...';
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    const base64 = canvas.toDataURL('image/jpeg', 0.92).split(',')[1];
+    stopKamera();
+    visLoading('Analyserer billede med AI...');
+    kalApiMedBillede(base64);
+  }, 8000);
+
+  try {
+    // Tag et stillbillede og lad ZXing decode det
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    const ctx = canvas.getContext('2d');
+
+    let found = false;
+    const interval = setInterval(async () => {
+      if (!scanningAktiv) { clearInterval(interval); return; }
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      try {
+        const result = await codeReader.decodeFromCanvas(canvas);
+        if (result && scanningAktiv) {
+          clearInterval(interval);
+          clearTimeout(timeout);
+          scanningAktiv = false;
+          linje.classList.remove('aktiv');
+          document.getElementById('scanFrame').classList.add('klar');
+          status.textContent = '✅ Stregkode fundet!';
+          status.classList.add('groen');
+          setTimeout(() => { stopKamera(); scanMedBarcode(result.getText()); }, 400);
+        }
+      } catch(e) { /* fortsæt scanning */ }
+    }, 300);
+
+  } catch(e) {
+    clearTimeout(timeout);
+    scanningAktiv = false;
+    stopKamera();
+    alert('Scanner fejl: ' + e.message);
   }
 }
 
-function manuelScan() {
-  // Tag et stillbillede fra video og send til Claude Vision
-  const video = document.getElementById('videoEl');
-  const canvas = document.createElement('canvas');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  canvas.getContext('2d').drawImage(video, 0, 0);
-  const base64 = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
-  stopKamera();
-  visLoading('Analyserer billede...');
-  kalApiMedBillede(base64);
-}
-
+// --- STOP KAMERA ---
 function stopKamera() {
-  if (codeReader) { try { codeReader.reset(); } catch(e){} codeReader = null; }
+  scanningAktiv = false;
+  if (codeReader) { try { codeReader.reset(); } catch(e) {} codeReader = null; }
   if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
   document.getElementById('cameraWrap').style.display = 'none';
-  document.getElementById('startScanBtn').style.display = 'block';
-  document.getElementById('stopScanBtn').style.display = 'none';
+  document.getElementById('startBtn').style.display = 'block';
+  document.getElementById('stopBtn').style.display = 'none';
+  document.getElementById('skarphedTip').classList.remove('vis');
+  document.getElementById('afstandGuide').style.display = 'none';
+  const btn = document.getElementById('scanNuBtn');
+  btn.classList.remove('aktiv'); btn.textContent = '📷 Scan nu';
+  document.getElementById('scanFrame').classList.remove('klar');
+  document.getElementById('scanLinje').classList.remove('aktiv');
 }
 
-// Foto OCR via Tesseract
+// --- FOTO ---
 async function behandlFoto(input) {
   const file = input.files[0];
   if (!file) return;
   visLoading('Læser ingrediensliste fra foto...');
-
-  try {
-    // Brug Tesseract til OCR
-    const { createWorker } = Tesseract;
-    const worker = await createWorker('dan+eng');
-    const { data: { text } } = await worker.recognize(file);
-    await worker.terminate();
-
-    // Send til API
-    await kalApiMedTekst(null, text);
-  } catch(e) {
-    // Fallback: send billedet til Claude direkte via base64
-    const reader = new FileReader();
-    reader.onload = async (ev) => {
-      const base64 = ev.target.result.split(',')[1];
-      await kalApiMedBillede(base64);
-    };
-    reader.readAsDataURL(file);
-  }
+  const reader = new FileReader();
+  reader.onload = async (ev) => {
+    const base64 = ev.target.result.split(',')[1];
+    await kalApiMedBillede(base64);
+  };
+  reader.readAsDataURL(file);
 }
 
 async function kalApiMedBillede(base64) {
   try {
-    const res = await fetch('/api/scan-billede', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ billede: base64 })
-    });
-    const data = await res.json();
-    visResultat(data);
-  } catch(e) {
-    skjulLoading();
-    alert('Fejl: ' + e.message);
-  }
+    const res = await fetch('/api/scan-billede', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ billede: base64 }) });
+    visResultat(await res.json());
+  } catch(e) { skjulLoading(); alert('Fejl: ' + e.message); }
 }
 
 async function scanMedBarcode(barcode) {
-  visLoading('Finder produkt med stregkode ' + barcode + '...');
+  visLoading('Finder produkt: ' + barcode + '...');
   await kalScanApi({ barcode });
 }
 
@@ -425,24 +492,12 @@ async function analysereManuel() {
 
 async function kalScanApi(body) {
   try {
-    const res = await fetch('/api/scan', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const data = await res.json();
-    visResultat(data);
-  } catch(e) {
-    skjulLoading();
-    alert('Fejl: ' + e.message);
-  }
+    const res = await fetch('/api/scan', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    visResultat(await res.json());
+  } catch(e) { skjulLoading(); alert('Fejl: ' + e.message); }
 }
 
-// Gem scan-resultat til brug ved gem
-let aktivtResultat = null;
-let aktivtProduktId = null;
-let valgtAlvorlighed = 'mild';
-
+// --- LOADING / RESULTAT ---
 function visLoading(tekst) {
   document.getElementById('loadingTekst').textContent = tekst || 'Analyserer...';
   document.getElementById('loadingBox').style.display = 'block';
@@ -450,155 +505,94 @@ function visLoading(tekst) {
   document.getElementById('gemWrap').style.display = 'none';
   document.getElementById('reaktionWrap').style.display = 'none';
 }
-
-function skjulLoading() {
-  document.getElementById('loadingBox').style.display = 'none';
-}
+function skjulLoading() { document.getElementById('loadingBox').style.display = 'none'; }
 
 function visResultat(data) {
   skjulLoading();
-  if (!data.found) {
-    alert(data.besked || 'Produkt ikke fundet');
-    return;
-  }
-
+  if (!data.found) { alert(data.besked || 'Produkt ikke fundet'); return; }
   aktivtResultat = data;
   const analyse = data.analyse || {};
-  const karakter = analyse.karakter || 'ADVARSEL';
+  const k = analyse.karakter || 'ADVARSEL';
   const box = document.getElementById('resultBox');
-
   box.className = 'result-box';
-  if (karakter === 'OK') { box.classList.add('result-ok'); document.getElementById('resultIcon').textContent = '✅'; }
-  else if (karakter === 'STOP') { box.classList.add('result-stop'); document.getElementById('resultIcon').textContent = '🚫'; }
-  else { box.classList.add('result-advarsel'); document.getElementById('resultIcon').textContent = '⚠️'; }
-
-  document.getElementById('resultKarakter').textContent = karakter === 'OK' ? 'Ser sikker ud!' : karakter === 'STOP' ? 'Spis det ikke!' : 'Vær forsigtig!';
+  if (k==='OK') { box.classList.add('result-ok'); document.getElementById('resultIcon').textContent='✅'; }
+  else if (k==='STOP') { box.classList.add('result-stop'); document.getElementById('resultIcon').textContent='🚫'; }
+  else { box.classList.add('result-advarsel'); document.getElementById('resultIcon').textContent='⚠️'; }
+  document.getElementById('resultKarakter').textContent = k==='OK'?'Ser sikker ud!':k==='STOP'?'Spis det ikke!':'Vær forsigtig!';
   document.getElementById('resultProduktNavn').textContent = data.produktNavn || '';
   document.getElementById('resultForklaring').textContent = analyse.forklaring || '';
   document.getElementById('resultIngredienser').textContent = data.ingredienser || '';
-
-  const advWrap = document.getElementById('resultAdvarsler');
-  advWrap.innerHTML = '';
-  const advarsler = [...(analyse.advarsler || []), ...(analyse.skjulte_risici || [])];
-  advarsler.forEach(a => {
-    const el = document.createElement('div');
-    el.className = 'advarsel-item';
-    el.textContent = '⚠ ' + a;
-    advWrap.appendChild(el);
+  const aw = document.getElementById('resultAdvarsler');
+  aw.innerHTML = '';
+  [...(analyse.advarsler||[]),...(analyse.skjulte_risici||[])].forEach(a => {
+    const el = document.createElement('div'); el.className='advarsel-item'; el.textContent='⚠ '+a; aw.appendChild(el);
   });
-
   box.style.display = 'block';
   document.getElementById('gemWrap').style.display = 'block';
 }
 
+// --- GEM / REAKTION ---
 async function gemProdukt() {
   if (!aktivtResultat) return;
   try {
-    const res = await fetch('/api/produkter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        handling: 'gem_produkt',
-        familie_id: FAMILIE_ID,
-        produkt: {
-          barcode: aktivtResultat.barcode || null,
-          navn: aktivtResultat.produktNavn || 'Ukendt produkt',
-          ingredienser: aktivtResultat.ingredienser,
-          analyse: aktivtResultat.analyse  // gemmes som analyse_data i DB
-        }
-      })
+    const res = await fetch('/api/produkter', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ handling:'gem_produkt', familie_id:FAMILIE_ID, produkt:{ barcode:aktivtResultat.barcode||null, navn:aktivtResultat.produktNavn||'Ukendt produkt', ingredienser:aktivtResultat.ingredienser, analyse:aktivtResultat.analyse }})
     });
     const data = await res.json();
     aktivtProduktId = data.id;
     document.getElementById('gemWrap').style.display = 'none';
     document.getElementById('gemDialog').style.display = 'flex';
-  } catch(e) {
-    alert('Kunne ikke gemme: ' + e.message);
-  }
+  } catch(e) { alert('Kunne ikke gemme: ' + e.message); }
 }
 
-function visReaktionForm() {
-  document.getElementById('gemDialog').style.display = 'none';
-  document.getElementById('reaktionWrap').style.display = 'block';
-}
-
-function lukDialog() {
-  document.getElementById('gemDialog').style.display = 'none';
-}
-
-function vaelgAlvorlighed(v, btn) {
-  valgtAlvorlighed = v;
-  document.querySelectorAll('.alv-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-}
+function visReaktionForm() { document.getElementById('gemDialog').style.display='none'; document.getElementById('reaktionWrap').style.display='block'; }
+function lukDialog() { document.getElementById('gemDialog').style.display='none'; }
+function vaelgAlvorlighed(v,btn) { valgtAlvorlighed=v; document.querySelectorAll('.alv-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); }
 
 async function gemReaktion() {
   const symptomer = document.getElementById('symptomInput').value.trim();
   if (!symptomer) { alert('Beskriv venligst symptomerne'); return; }
-
   try {
-    await fetch('/api/produkter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        handling: 'registrer_reaktion',
-        familie_id: FAMILIE_ID,
-        produkt_id: aktivtProduktId,
-        reaktion: { symptomer, alvorlighed: valgtAlvorlighed }
-      })
+    await fetch('/api/produkter', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ handling:'registrer_reaktion', familie_id:FAMILIE_ID, produkt_id:aktivtProduktId, reaktion:{symptomer, alvorlighed:valgtAlvorlighed}})
     });
-    document.getElementById('reaktionWrap').style.display = 'none';
-    document.getElementById('symptomInput').value = '';
+    document.getElementById('reaktionWrap').style.display='none';
+    document.getElementById('symptomInput').value='';
     alert('Reaktion gemt! Gå til "Mine produkter" for at finde sammenfald.');
-  } catch(e) {
-    alert('Fejl: ' + e.message);
-  }
+  } catch(e) { alert('Fejl: ' + e.message); }
 }
 
-// Produktliste
+// --- PRODUKTLISTE ---
 async function indlaesListe() {
-  const container = document.getElementById('produktListe');
-  container.innerHTML = '<div class="loading" style="display:block;"><div class="spinner"></div><p>Henter produkter...</p></div>';
-
+  const c = document.getElementById('produktListe');
+  c.innerHTML = '<div class="loading" style="display:block;"><div class="spinner"></div><p>Henter produkter...</p></div>';
   try {
     const res = await fetch('/api/produkter?familie_id=' + FAMILIE_ID);
     const produkter = await res.json();
-
     if (!produkter.length) {
-      container.innerHTML = '<div class="tom-liste"><span class="tom-liste-emoji">📦</span><div style="font-weight:700;margin-bottom:4px;">Ingen produkter endnu</div><div style="font-size:13px;">Scan dit første produkt med Scanner-fanen!</div></div>';
+      c.innerHTML = '<div class="tom-liste"><span class="tom-liste-emoji">📦</span><div style="font-weight:700;margin-bottom:4px;">Ingen produkter endnu</div><div style="font-size:13px;">Scan dit første produkt!</div></div>';
       return;
     }
-
-    const harReaktion = produkter.some(p => p.har_reaktion);
-    document.getElementById('sammenfaldBtn').style.display = harReaktion ? 'block' : 'none';
-
-    container.innerHTML = produkter.map(p => {
-      const k = p.analyse?.karakter || 'ADVARSEL';
-      const badgeClass = k === 'OK' ? 'badge-ok' : k === 'STOP' ? 'badge-stop' : 'badge-advarsel';
+    document.getElementById('sammenfaldBtn').style.display = produkter.some(p=>p.har_reaktion) ? 'block' : 'none';
+    c.innerHTML = produkter.map(p => {
+      const k = p.analyse_data?.karakter || 'ADVARSEL';
+      const bc = k==='OK'?'badge-ok':k==='STOP'?'badge-stop':'badge-advarsel';
       const dato = new Date(p.sidst_scannet).toLocaleDateString('da-DK');
-      return `<div class="produkt-kort ${p.har_reaktion ? 'har-reaktion' : ''}">
-        <div class="produkt-kort-header">
-          <div class="produkt-kort-navn">${p.navn || 'Ukendt'}</div>
-          <span class="status-badge ${badgeClass}">${k}</span>
-        </div>
+      return `<div class="produkt-kort ${p.har_reaktion?'har-reaktion':''}">
+        <div class="produkt-kort-header"><div class="produkt-kort-navn">${p.navn||'Ukendt'}</div><span class="status-badge ${bc}">${k}</span></div>
         <div class="produkt-dato">Scannet: ${dato}</div>
-        ${p.har_reaktion ? '<span class="reaktion-tag">⚠ Reaktion registreret</span>' : ''}
-        <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">${p.analyse?.forklaring || ''}</div>
-        ${!p.har_reaktion ? `<div class="produkt-kort-actions">
-          <button class="btn btn-sm btn-red" onclick="markerReaktion('${p.id}')">Registrer reaktion</button>
-        </div>` : ''}
+        ${p.har_reaktion?'<span class="reaktion-tag">⚠ Reaktion registreret</span>':''}
+        <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">${p.analyse_data?.forklaring||''}</div>
+        ${!p.har_reaktion?`<div style="margin-top:8px;"><button class="btn btn-sm btn-red" onclick="markerReaktion('${p.id}')">Registrer reaktion</button></div>`:''}
       </div>`;
     }).join('');
-  } catch(e) {
-    container.innerHTML = '<div style="color:red;padding:16px;">Fejl: ' + e.message + '</div>';
-  }
+  } catch(e) { c.innerHTML = '<div style="color:red;padding:16px;">Fejl: ' + e.message + '</div>'; }
 }
 
-async function markerReaktion(produktId) {
-  aktivtProduktId = produktId;
-  visSektion('scanner');
+function markerReaktion(id) {
+  aktivtProduktId = id;
+  visSektion('scanner', null);
   document.querySelectorAll('.nav-tab')[1].classList.add('active');
-  document.querySelectorAll('.nav-tab')[2].classList.remove('active');
   document.getElementById('reaktionWrap').style.display = 'block';
 }
 
@@ -607,31 +601,19 @@ async function analyserSammenfald() {
   const indhold = document.getElementById('analyseIndhold');
   kort.style.display = 'block';
   indhold.innerHTML = '<div class="loading" style="display:block;"><div class="spinner"></div><p>Analyserer sammenfald...</p></div>';
-
   try {
-    const res = await fetch('/api/produkter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ handling: 'find_sammenfald', familie_id: FAMILIE_ID })
-    });
+    const res = await fetch('/api/produkter', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ handling:'find_sammenfald', familie_id:FAMILIE_ID }) });
     const data = await res.json();
     const s = data.sammenfald || {};
-
     indhold.innerHTML = `
-      ${(s.mulige_syndere || []).map(m => `<div class="synder-item">🎯 ${m}</div>`).join('')}
-      <div style="font-weight:700;font-size:13px;margin:10px 0 6px;color:var(--text-muted);">Fælles ingredienser i reaktionsprodukter:</div>
-      ${(s.sammenfald || []).map(i => `<div class="sammenfald-item">⚠ ${i}</div>`).join('')}
-      ${s.anbefaling ? `<div class="anbefaling-box">💡 ${s.anbefaling}</div>` : ''}`;
-  } catch(e) {
-    indhold.innerHTML = '<div style="color:red;">Fejl: ' + e.message + '</div>';
-  }
+      ${(s.mulige_syndere||[]).map(m=>`<div class="synder-item">🎯 ${m}</div>`).join('')}
+      <div style="font-weight:700;font-size:13px;margin:10px 0 6px;color:var(--text-muted);">Fælles ingredienser:</div>
+      ${(s.sammenfald||[]).map(i=>`<div class="sammenfald-item">⚠ ${i}</div>`).join('')}
+      ${s.anbefaling?`<div class="anbefaling-box">💡 ${s.anbefaling}</div>`:''}`;
+  } catch(e) { indhold.innerHTML = '<div style="color:red;">Fejl: ' + e.message + '</div>'; }
 }
 </script>
 <script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js');
-  }
-</script>
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.register('/sw.js');}</script>
 </body>
 </html>
