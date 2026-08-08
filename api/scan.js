@@ -23,46 +23,84 @@ export default async function handler(req, res) {
 
     if (!ingredienser && ocrText) ingredienser = ocrText;
     if (!ingredienser) {
-      return res.status(200).json({ found: false, besked: 'Produkt ikke fundet. Proev at indsaette ingredienslisten manuelt.' });
+      return res.status(200).json({ found: false, besked: 'Produkt ikke fundet. Indsaet ingredienslisten manuelt.' });
     }
 
   // Hent kendte problematiske ingredienser fra roed/gul markerede produkter
   let kendteIngredienser = [];
+  let kendteNavne = [];
   try {
     const sbRes = await fetch(
-      process.env.SUPABASE_URL + '/rest/v1/produkter?markering=in.(roed,gul)&select=ingredienser,enumre,navn',
+      process.env.SUPABASE_URL + '/rest/v1/produkter?markering=in.(roed,gul)&select=navn,ingredienser,enumre,markering',
       { headers: { 'apikey': process.env.SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + process.env.SUPABASE_ANON_KEY } }
     );
     if (sbRes.ok) {
-      const produkter = await sbRes.json();
-      produkter.forEach(p => {
+      const kendte = await sbRes.json();
+      kendte.forEach(p => {
+        kendteNavne.push({ navn: p.navn, markering: p.markering });
         if (p.ingredienser) {
-          p.ingredienser.toLowerCase().split(/[,;]/).forEach(i => {
-            const trimmed = i.trim().replace(/[()]/g, '');
-            if (trimmed.length > 2) kendteIngredienser.push(trimmed);
+          p.ingredienser.toLowerCase().split(/[,;()\/]/).forEach(i => {
+            const t = i.trim().replace(/[*%]/g, '');
+            if (t.length > 2) kendteIngredienser.push(t);
           });
         }
-        if (p.enumre) kendteIngredienser.push(...p.enumre.map(e => e.toLowerCase()));
+        if (p.enumre) p.enumre.forEach(e => kendteIngredienser.push(e.toLowerCase()));
       });
-      kendteIngredienser = [...new Set(kendteIngredienser)].slice(0, 50);
+      kendteIngredienser = [...new Set(kendteIngredienser)].slice(0, 80);
     }
   } catch(e) { /* fortsaet uden kendte */ }
   const kendteTekst = kendteIngredienser.length > 0
-    ? '\nKENDTE PROBLEMATISKE INGREDIENSER (fra tidligere reaktioner - marker disse som kendte_matches hvis de optræder): ' + kendteIngredienser.join(', ')
+    ? '\nKENDTE PROBLEMATISKE INGREDIENSER (fra produkter familien har reageret paa - ANGIV dem der optræder i kendte_matches): ' + kendteIngredienser.join(', ')
     : '';
 
-    const forbudt = ['hvede','hvedeprotein','rug','byg','spelt','malt','havre','gluten',
-      'maelk','maelk','skummetmaelk','soedmaelk','maelkeprotein','valle','kasein','laktose','smoereolie','maelkepulver',
-      'soja','sojaprotein','sojalecithin','E1404','E1412','E1413','E1414','E1420','E1422','E1440','E1442','E1450','E1451'];
-    const fundne = forbudt.filter(f => ingredienser.toLowerCase().includes(f.toLowerCase()));
+    // FULD forbudsliste fra Allergi- og Lungeklinikken Aarhus
+    const forbudt = [
+      // Gluten - korn
+      'hvede','hvedemel','hvedeprotein','hydrolyseret hvedeprotein','hvedestivelse',
+      'hvedekim','hvedeklid','durumhvede','speltkerner','hvedekim',
+      'rug','rugmel','rugkerner','byg','bygmel','bygkerner','byggryn','perlebyg','bygmalt',
+      'spelt','speltkerner','fuldkornsmel','grahammel','semulje','semolina',
+      'bulgur','couscous','emmer','enkorn','kamut',
+      'malt','maltekstrakt','maltsirup','maltmel',
+      'havre','havregryn','havremel','havreklid',
+      'gluten','glutenholdig',
+      // Gluten - skjulte
+      'glucosesirup','dextrose','maltodextrin','maltose',
+      // Mælk
+      'maelk','mælk','skummetmaelk','skummetmælk','soedmaelk','sødmælk',
+      'maelkeprotein','mælkeprotein','maelkebestanddele','mælkebestanddele',
+      'maelketoerstof','mælketørstof','toermaelk','tørmælk',
+      'valle','valleprotein','vallepulver','lactaalbumin','lactalbumin',
+      'kasein','kaliumkaseinat','natriumkaseinat','casein',
+      'laktose','lactose',
+      'smoereolie','smøreolie','smoer','smør','smoearoma','smøraroma',
+      'floede','fløde','inddampet maelk','inddampet mælk',
+      'maelkepulver','mælkepulver','skummetmaelkspulver','skummetmælkspulver',
+      'soedmaelkspulver','sødmælkspulver',
+      // Soja
+      'soja','sojamaelk','sojamælk','sojafloede','sojafløde',
+      'sojaprotein','sojalecithin','sojamel','tofu','edamame',
+      // E-numre med gluten/mælk risiko
+      'E1404','E1412','E1413','E1414','E1420','E1422','E1440','E1442','E1450','E1451'
+    ];
 
-    const claudePrompt = `Analyser disse ingredienser for glutenallergi og maelkeallergi.
+    const ing_lower = ingredienser.toLowerCase();
+    const fundne = forbudt.filter(f => ing_lower.includes(f.toLowerCase()));
+
+    // Tjek om kendte ingredienser optræder
+    const kendteMatches = kendteIngredienser.filter(k => ing_lower.includes(k));
+
+    const claudePrompt = `Du er allergiekspert. Analyser disse ingredienser for en person med glutenallergi og mælkeallergi.
 Produkt: "${produktNavn || 'ukendt'}"
 Ingredienser: "${ingredienser}"
-Allerede fundne: ${fundne.length > 0 ? fundne.join(', ') : 'ingen'}${kendteTekst}
 
-Svar KUN med JSON:
-{"ingredienser":"${ingredienser.replace(/"/g,"'")}","enumre":[],"sikker":true,"advarsler":[],"skjulte_risici":[],"forklaring":"forklaring","karakter":"OK","kendte_matches":[]}`;
+FORBUDTE ingredienser fundet: ${fundne.length > 0 ? fundne.join(', ') : 'ingen fra listen'}
+${kendteTekst}
+
+Svar KUN med JSON - ingen tekst udenfor:
+{"ingredienser":"${ingredienser.replace(/"/g,"'").substring(0,500)}","enumre":["E-numre fra listen"],"sikker":false,"advarsler":["konkret advarsel"],"skjulte_risici":["skjult risiko"],"forklaring":"Kort forklaring til et barn paa 10 aar","karakter":"STOP","kendte_matches":["kendte ingredienser der optræder"]}
+
+karakter skal vaere: OK (ingen problemer), ADVARSEL (mulig risiko), STOP (indeholder forbudte ingredienser)`;
 
     const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -75,9 +113,22 @@ Svar KUN med JSON:
     let analyse = null;
     try { analyse = JSON.parse(raw); } catch(e) {}
     if (!analyse) { try { const m = raw.match(/\{[\s\S]*\}/); if(m) analyse = JSON.parse(m[0]); } catch(e) {} }
-    if (!analyse) analyse = { ingredienser, enumre:[], sikker:fundne.length===0, advarsler:fundne, skjulte_risici:[], forklaring:'Tjek listen manuelt.', karakter:fundne.length>0?'ADVARSEL':'OK', kendte_matches:[] };
+    if (!analyse) analyse = {
+      ingredienser, enumre: [], sikker: fundne.length === 0,
+      advarsler: fundne.length > 0 ? ['Indeholder: ' + fundne.join(', ')] : [],
+      skjulte_risici: [], forklaring: 'Tjek ingredienslisten grundigt.',
+      karakter: fundne.length > 0 ? 'STOP' : 'OK',
+      kendte_matches: kendteMatches
+    };
 
-    return res.status(200).json({ found:true, produktNavn:produktNavn||'', ingredienser, enumre:analyse.enumre||[], kilde:barcode?'barcode':'ocr', fundneForbudte:fundne, analyse });
+    // Sikr at kendte_matches altid er sat
+    if (!analyse.kendte_matches) analyse.kendte_matches = kendteMatches;
+
+    return res.status(200).json({
+      found: true, produktNavn: produktNavn || '', ingredienser,
+      enumre: analyse.enumre || [], kilde: barcode ? 'barcode' : 'ocr',
+      fundneForbudte: fundne, analyse
+    });
 
   } catch(e) {
     return res.status(200).json({ found: false, besked: 'Fejl: ' + e.message });
