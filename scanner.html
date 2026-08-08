@@ -111,6 +111,12 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 .alvrow{display:flex;gap:8px;margin-bottom:8px;}
 .alv{flex:1;padding:8px;border:2px solid var(--b);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:var(--m);}
 .alv.on{border-color:var(--r);background:var(--rl);color:var(--r);}
+.zoombar{position:absolute;bottom:52px;left:10px;right:10px;z-index:3;display:none;}
+.zoombar.vis{display:block;}
+.zoom-row{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,0.6);border-radius:20px;padding:6px 12px;}
+.zoom-row label{color:#fff;font-size:11px;font-weight:700;white-space:nowrap;}
+.zoom-row input{flex:1;accent-color:#1D9E75;}
+.zoom-val{color:#9FE1CB;font-size:11px;font-weight:800;min-width:28px;text-align:right;}
 .ocr-in{width:100%;min-height:80px;border:1.5px solid var(--b);border-radius:8px;padding:10px;font-family:'Nunito',sans-serif;font-size:13px;margin-bottom:8px;resize:vertical;}
 
 /* LISTE */
@@ -143,7 +149,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 <body>
 
 <div class="hdr">
-  <span class="logo">🌾 Helena <span class="ver">v9</span></span>
+  <span class="logo">🌾 Helena <span class="ver">v10</span></span>
   <div class="tabs">
     <a href="index.html" class="tab">Madplan</a>
     <button class="tab on" onclick="side('scanner',event)">Scanner</button>
@@ -167,13 +173,20 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
           <div class="hj bl"></div><div class="hj br"></div>
           <div class="linje" id="linje"></div>
         </div>
-        <div class="afguide"><span class="afpill">📏 5–15 cm fra produktet · tap for fokus</span></div>
+        <div class="zoombar" id="zoombar">
+          <div class="zoom-row">
+            <label>🔍 Zoom</label>
+            <input type="range" id="zoomSlider" min="1" max="5" step="0.1" value="1.5" oninput="setZoom(this.value)">
+            <span class="zoom-val" id="zoomVal">1.5x</span>
+          </div>
+        </div>
+        <div class="afguide"><span class="afpill">📏 5–15 cm · tap for fokus</span></div>
         <div class="sknarea"><button class="sknbtn" id="sknbtn" onclick="startScan()">📷 Scan nu</button></div>
       </div>
     </div>
 
     <div class="tips" id="tips">
-      📏 <b>Afstand:</b> Hold 5–15 cm fra stregkoden<br>
+      📏 <b>Afstand:</b> Hold 5–15 cm fra stregkoden — brug zoom-slideren<br>
       💡 <b>Lys:</b> God belysning — ingen skygger<br>
       🤚 <b>Stabil:</b> Hold telefonen helt stille<br>
       👆 <b>Tap:</b> Tryk på skærmen for at fokusere
@@ -321,15 +334,35 @@ async function startKamera() {
           try { await track.applyConstraints({ advanced:[{zoom:1.5}] }); } catch(e) {}
         }
       }
-      setTimeout(() => {
+      setTimeout(async () => {
         document.getElementById('sknbtn').classList.add('on');
         setSt('✅ Klar — tryk Scan nu', 'g');
+        // Vis zoom-slider
+        const zb = document.getElementById('zoombar');
+        if (zb) zb.classList.add('vis');
+        // Sæt initial zoom
+        await setZoom(1.5);
       }, 900);
     }, { once:true });
   } catch(e) {
     alert('Kamera fejl: ' + e.message);
     stopKamera();
   }
+}
+
+async function setZoom(val) {
+  document.getElementById('zoomVal').textContent = parseFloat(val).toFixed(1)+'x';
+  document.getElementById('zoomSlider').value = val;
+  if (!stream) return;
+  const track = stream.getVideoTracks()[0];
+  if (!track || !track.getCapabilities) return;
+  try {
+    const caps = track.getCapabilities();
+    if (caps.zoom) {
+      const z = Math.min(Math.max(parseFloat(val), caps.zoom.min), caps.zoom.max);
+      await track.applyConstraints({ advanced: [{ zoom: z }] });
+    }
+  } catch(e) {}
 }
 
 async function tapFokus(e) {
@@ -359,6 +392,7 @@ function stopKamera() {
   document.getElementById('startBtn').style.display='block';
   document.getElementById('stopBtn').style.display='none';
   document.getElementById('tips').style.display='block';
+  document.getElementById('zoombar').classList.remove('vis');
   document.getElementById('sknbtn').classList.remove('on');
   document.getElementById('linje').classList.remove('on');
   document.getElementById('ramme').className='ramme';
