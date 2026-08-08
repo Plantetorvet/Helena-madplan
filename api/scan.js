@@ -3,106 +3,56 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
 
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-    const { barcode, ocrText } = body;
+    const { barcode, ocrText } = body || {};
 
-    let ingredienser = null;
-    let produktNavn = null;
-    let kilde = null;
+    let ingredienser = null, produktNavn = null;
 
-    // Forsøg stregkode-opslag via Open Food Facts
     if (barcode) {
       try {
-        const offRes = await fetch(`https://world.openfoodfacts.org/api/v2/product/${barcode}.json?fields=product_name,ingredients_text,ingredients_text_da`);
-        const offData = await offRes.json();
-        if (offData.status === 1 && offData.product) {
-          produktNavn = offData.product.product_name || '';
-          ingredienser = offData.product.ingredients_text_da || offData.product.ingredients_text || '';
-          kilde = 'barcode';
+        const r = await fetch(`https://world.openfoodfacts.org/api/v2/product/${barcode}.json?fields=product_name,product_name_da,ingredients_text,ingredients_text_da`);
+        const d = await r.json();
+        if (d.status === 1 && d.product) {
+          produktNavn = d.product.product_name_da || d.product.product_name || '';
+          ingredienser = d.product.ingredients_text_da || d.product.ingredients_text || '';
         }
-      } catch (e) { /* fortsæt til OCR */ }
+      } catch(e) {}
     }
 
-    // Fallback: brug OCR-tekst direkte
-    if (!ingredienser && ocrText) {
-      ingredienser = ocrText;
-      kilde = 'ocr';
-    }
-
+    if (!ingredienser && ocrText) ingredienser = ocrText;
     if (!ingredienser) {
-      return res.status(200).json({ found: false, besked: 'Produktet blev ikke fundet. Prøv at tage et foto af ingredienslisten.' });
+      return res.status(200).json({ found: false, besked: 'Produkt ikke fundet i database. Prøv at tage et foto af ingredienslisten.' });
     }
 
-    // Forbudsliste (fra Allergi- og Lungeklinikken Aarhus)
-    const forbudt = [
-      'hvede','hvedeprotein','hydrolyseret hvedeprotein','hvedestivelse',
-      'rug','rugmel','rugkerner','bygmel','bygkerner','byggryn','perlebyg','bygmalt',
-      'spelt','speltkerner','fuldkorn','graham','semulje','bulgur','couscous','emmer','enkorn','kamut',
-      'malt','maltekstrakt','maltsirup',
-      'havre','havregryn','havremel','havreklid',
-      'gluten',
-      'maelk','mælk','skummetmælk','sødmælk','mælkeprotein','valle','valleprotein','vallepulver',
-      'kasein','kaliumkaseinat','natriumkaseinat','laktose','smøreolie','smøraroma',
-      'inddampet mælk','mælkebestanddele','mælketørstof','tørmælk','lactaalbumin',
-      'mælkepulver','skummetmælkspulver','sødmælkspulver',
-      'soja','sojamælk','sojafløde','sojaolie','sojaprotein','sojalecithin','tofu','edamame',
-      'E1404','E1412','E1413','E1414','E1420','E1422','E1440','E1442','E1450','E1451',
-      'glucosesirup','dextrose','maltodextrin','maltose'
-    ];
+    const forbudt = ['hvede','hvedeprotein','rug','byg','spelt','malt','havre','gluten','mælk','skummetmælk','sødmælk','mælkeprotein','valle','kasein','laktose','smøreolie','mælkepulver','soja','sojaprotein','sojalecithin','E1404','E1412','E1413','E1414','E1420','E1422','E1440','E1442','E1450','E1451'];
+    const fundne = forbudt.filter(f => ingredienser.toLowerCase().includes(f.toLowerCase()));
 
-    const ingrediensListe = ingredienser.toLowerCase();
-    const fundne = forbudt.filter(f => ingrediensListe.includes(f.toLowerCase()));
-
-    // Brug Claude til uddybende analyse
-    const claudePrompt = `Du er en allergiekspert der hjælper en person med glutenallergi og mælkeallergi.
-
-Analyser disse ingredienser og svar KUN med JSON:
+    const claudePrompt = `Analyser disse ingredienser for glutenallergi og mælkeallergi.
+Produkt: "${produktNavn || 'ukendt'}"
 Ingredienser: "${ingredienser}"
+Allerede fundne problemer: ${fundne.length > 0 ? fundne.join(', ') : 'ingen'}
 
-Allerede fundne problematiske ingredienser: ${fundne.length > 0 ? fundne.join(', ') : 'ingen fundet med simpel søgning'}
+Svar KUN med JSON:
+{"ingredienser":"${ingredienser.replace(/"/g,"'")}","enumre":["E-numre"],"sikker":true,"advarsler":[],"skjulte_risici":[],"forklaring":"forklaring","karakter":"OK","kendte_matches":[]}`;
 
-Tjek grundigt for: gluten (hvede, rug, byg, spelt, havre, malt), mælkeprodukter (mælk, smør, fløde, ost, valle, kasein, laktose), soja, og skjulte E-numre der kan indeholde gluten.
-
-Svar KUN med dette JSON-format:
-{
-  "sikker": true/false,
-  "advarsler": ["advarsel 1", "advarsel 2"],
-  "skjulte_risici": ["risiko 1"],
-  "forklaring": "Kort forklaring til et barn på 10 år",
-  "karakter": "OK" / "ADVARSEL" / "STOP"
-}`;
-
-    const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+    const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 500,
-        messages: [{ role: 'user', content: claudePrompt }]
-      })
+      headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 800, messages: [{ role: 'user', content: claudePrompt }] })
     });
 
-    const claudeData = await claudeRes.json();
-    const rawText = claudeData.content?.[0]?.text || '{}';
-    const analyse = JSON.parse(rawText.replace(/```json|```/g, '').trim());
+    const claudeData = await apiRes.json();
+    const raw = (claudeData.content?.[0]?.text || '{}').trim();
+    let analyse = null;
+    try { analyse = JSON.parse(raw); } catch(e) {}
+    if (!analyse) { try { const m = raw.match(/\{[\s\S]*\}/); if(m) analyse = JSON.parse(m[0]); } catch(e) {} }
+    if (!analyse) analyse = { ingredienser, enumre:[], sikker:fundne.length===0, advarsler:fundne, skjulte_risici:[], forklaring:'Tjek listen manuelt.', karakter:fundne.length>0?'ADVARSEL':'OK', kendte_matches:[] };
 
-    return res.status(200).json({
-      found: true,
-      produktNavn,
-      ingredienser,
-      kilde,
-      fundneForbudte: fundne,
-      analyse
-    });
+    return res.status(200).json({ found: true, produktNavn: produktNavn||'', ingredienser, enumre: analyse.enumre||[], kilde: barcode?'barcode':'ocr', fundneForbudte: fundne, analyse });
 
-  } catch (e) {
-    return res.status(500).json({ error: e.message });
+  } catch(e) {
+    return res.status(200).json({ found: false, besked: 'Fejl: ' + e.message });
   }
 }
