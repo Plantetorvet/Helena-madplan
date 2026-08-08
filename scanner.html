@@ -12,160 +12,171 @@
 <title>Helena Scanner</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--green:#1D9E75;--gl:#E1F5EE;--gm:#9FE1CB;--gd:#085041;--gp:#0F6E56;--red:#E53935;--rl:#FFEBEE;--amb:#F59E0B;--al:#FFFBEB;--txt:#1a1a1a;--mut:#666;--bg:#f7faf9;--card:#fff;--bdr:rgba(0,0,0,0.09);--r:14px;}
+:root{--g:#1D9E75;--gl:#E1F5EE;--gm:#9FE1CB;--gd:#085041;--gp:#0F6E56;--r:#E53935;--rl:#FFEBEE;--y:#F59E0B;--yl:#FFFBEB;--t:#1a1a1a;--m:#666;--bg:#f7faf9;--c:#fff;--b:rgba(0,0,0,0.09);--rd:14px;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;max-width:480px;margin:0 auto;}
-.header{background:#fff;border-bottom:1px solid var(--bdr);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;max-width:480px;margin:0 auto;}
+.hdr{background:#fff;border-bottom:1px solid var(--b);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
 .logo{font-family:'Fredoka One',cursive;font-size:18px;color:var(--gd);}
-.ver{font-size:10px;background:var(--gl);color:var(--gd);padding:2px 6px;border-radius:10px;font-family:monospace;margin-left:4px;}
+.ver{font-size:9px;background:var(--gl);color:var(--gd);padding:2px 5px;border-radius:8px;font-family:monospace;margin-left:4px;}
 .tabs{display:flex;gap:4px;}
-.tab{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--bdr);background:#fff;color:var(--mut);text-decoration:none;}
-.tab.on{background:var(--green);color:#fff;border-color:var(--green);}
-.sec{display:none;padding:16px;}
-.sec.on{display:block;}
-.card{background:var(--card);border-radius:var(--r);padding:20px;margin-bottom:14px;border:1px solid var(--bdr);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
-h2{font-family:'Fredoka One',cursive;font-size:22px;color:var(--gd);margin-bottom:4px;}
-.sub{font-size:13px;color:var(--mut);margin-bottom:16px;line-height:1.5;}
+.tab{padding:6px 11px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--b);background:#fff;color:var(--m);text-decoration:none;}
+.tab.on{background:var(--g);color:#fff;border-color:var(--g);}
+.pg{display:none;padding:16px;}
+.pg.on{display:block;}
+.card{background:var(--c);border-radius:var(--rd);padding:18px;margin-bottom:12px;border:1px solid var(--b);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-bottom:4px;}
+.sub{font-size:13px;color:var(--m);margin-bottom:14px;line-height:1.5;}
 
 /* KAMERA */
-.cam-wrap{position:relative;background:#000;border-radius:16px;overflow:hidden;margin-bottom:12px;display:none;}
-#vid{width:100%;display:block;object-fit:cover;}
-.overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
-.skygge{position:absolute;inset:0;box-shadow:0 0 0 2000px rgba(0,0,0,0.45);}
-.ramme{width:80%;aspect-ratio:2.5/1;position:relative;z-index:2;}
-.hj{position:absolute;width:28px;height:28px;border-color:#fff;border-style:solid;transition:border-color 0.3s;}
-.hj.tl{top:0;left:0;border-width:4px 0 0 4px;border-radius:5px 0 0 5px;}
-.hj.tr{top:0;right:0;border-width:4px 4px 0 0;border-radius:0 5px 5px 0;}
-.hj.bl{bottom:0;left:0;border-width:0 0 4px 4px;border-radius:5px 0 0 5px;}
-.hj.br{bottom:0;right:0;border-width:0 4px 4px 0;border-radius:0 0 5px 5px;}
+.cambox{position:relative;background:#111;border-radius:16px;overflow:hidden;margin-bottom:10px;display:none;}
+#vid{width:100%;display:block;}
+.ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
+.skygge{position:absolute;inset:0;background:rgba(0,0,0,0.45);}
+.stbar{position:absolute;top:10px;left:10px;right:10px;z-index:3;display:flex;justify-content:center;}
+.stpill{background:rgba(0,0,0,0.72);color:#fff;font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;transition:background 0.3s;text-align:center;max-width:90%;}
+.stpill.g{background:rgba(29,158,117,0.92);}
+.stpill.r{background:rgba(229,57,53,0.92);}
+.ramme{width:82%;aspect-ratio:2.5/1;position:relative;z-index:2;margin-top:10px;}
+.hj{position:absolute;width:26px;height:26px;border-color:#fff;border-style:solid;transition:border-color 0.3s;}
+.hj.tl{top:0;left:0;border-width:3px 0 0 3px;border-radius:4px 0 0 4px;}
+.hj.tr{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 4px 4px 0;}
+.hj.bl{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:4px 0 0 4px;}
+.hj.br{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 4px 4px;}
 .ramme.fundet .hj{border-color:#1D9E75;}
+.ramme.fejl .hj{border-color:#E53935;}
 .linje{position:absolute;left:3%;width:94%;height:2px;background:rgba(29,158,117,0.9);display:none;}
-.linje.on{display:block;animation:scan 1.5s ease-in-out infinite;}
-@keyframes scan{0%,100%{top:6%;}50%{top:90%;}}
-.status-bar{position:absolute;top:10px;left:10px;right:10px;z-index:3;display:flex;justify-content:center;}
-.status-pill{background:rgba(0,0,0,0.7);color:#fff;font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;transition:background 0.3s;}
-.status-pill.groen{background:rgba(29,158,117,0.9);}
-.afstand-guide{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);z-index:3;white-space:nowrap;}
-.afstand-pill{background:rgba(0,0,0,0.65);color:#fff;font-size:12px;padding:4px 12px;border-radius:16px;}
-.scan-btn-area{position:absolute;bottom:14px;left:0;right:0;display:flex;justify-content:center;z-index:3;pointer-events:auto;}
-.scan-nu{background:rgba(29,158,117,0.95);color:#fff;border:2.5px solid rgba(255,255,255,0.35);border-radius:28px;padding:13px 38px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;opacity:0.4;transform:scale(0.88);transition:all 0.3s;pointer-events:none;}
-.scan-nu.on{opacity:1;transform:scale(1);pointer-events:auto;animation:puls 2s ease-in-out infinite;}
-@keyframes puls{0%,100%{box-shadow:0 3px 16px rgba(0,0,0,0.4);}50%{box-shadow:0 3px 28px rgba(29,158,117,0.75),0 0 0 7px rgba(29,158,117,0.18);}}
-.fokus-ring{position:fixed;border:2px solid #1D9E75;border-radius:50%;width:42px;height:42px;pointer-events:none;z-index:999;animation:fring 0.65s forwards;}
-@keyframes fring{0%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(1.7);}}
+.linje.on{display:block;animation:scan 1.6s ease-in-out infinite;}
+@keyframes scan{0%,100%{top:5%;}50%{top:91%;}}
+.afguide{position:absolute;bottom:52px;left:50%;transform:translateX(-50%);z-index:3;white-space:nowrap;}
+.afpill{background:rgba(0,0,0,0.65);color:#fff;font-size:11px;padding:3px 10px;border-radius:14px;}
+.sknarea{position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;z-index:3;pointer-events:auto;}
+.sknbtn{background:rgba(29,158,117,0.95);color:#fff;border:2.5px solid rgba(255,255,255,0.35);border-radius:26px;padding:12px 36px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;opacity:0.35;transform:scale(0.88);transition:all 0.3s;pointer-events:none;}
+.sknbtn.on{opacity:1;transform:scale(1);pointer-events:auto;animation:puls 2s ease-in-out infinite;}
+@keyframes puls{0%,100%{box-shadow:0 3px 14px rgba(0,0,0,0.35);}50%{box-shadow:0 3px 26px rgba(29,158,117,0.7),0 0 0 6px rgba(29,158,117,0.15);}}
+.fring{position:fixed;border:2px solid var(--g);border-radius:50%;width:40px;height:40px;pointer-events:none;z-index:999;animation:frd 0.6s forwards;}
+@keyframes frd{0%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(1.7);}}
 
 /* TIPS */
-.tips{background:#111;color:#fff;border-radius:12px;padding:12px 14px;margin-bottom:10px;font-size:13px;line-height:1.8;display:none;}
-.tips.on{display:block;}
-.tips b{color:#9FE1CB;}
+.tips{background:#111;color:#fff;border-radius:12px;padding:11px 14px;margin-bottom:10px;font-size:13px;line-height:1.9;}
+.tips b{color:var(--gm);}
 
 /* KNAPPER */
-.btn{width:100%;padding:13px;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;margin-bottom:8px;}
-.btn-g{background:var(--green);color:#fff;box-shadow:0 4px 12px rgba(29,158,117,0.3);}
+.btn{width:100%;padding:13px;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.15s;margin-bottom:8px;}
+.btn-g{background:var(--g);color:#fff;box-shadow:0 3px 10px rgba(29,158,117,0.3);}
 .btn-g:hover{background:var(--gp);}
-.btn-o{background:#fff;color:var(--green);border:2px solid var(--green);}
-.btn-r{background:var(--red);color:#fff;}
-.btn-s{padding:7px 14px;width:auto;font-size:12px;border-radius:20px;margin-bottom:0;}
+.btn-o{background:#fff;color:var(--g);border:2px solid var(--g);}
+.btn-r{background:var(--r);color:#fff;}
+.btn-y{background:var(--y);color:#fff;}
+.btn-s{padding:7px 13px;width:auto;font-size:12px;border-radius:20px;margin-bottom:0;}
 .btn:disabled{opacity:0.4;cursor:not-allowed;}
 #fotoInput{display:none;}
-.eller{text-align:center;color:var(--mut);font-size:12px;font-weight:700;margin:6px 0;position:relative;}
-.eller::before,.eller::after{content:"";position:absolute;top:50%;width:42%;height:1px;background:var(--bdr);}
+.eller{text-align:center;color:var(--m);font-size:12px;font-weight:700;margin:5px 0;position:relative;}
+.eller::before,.eller::after{content:"";position:absolute;top:50%;width:42%;height:1px;background:var(--b);}
 .eller::before{left:0;}.eller::after{right:0;}
 
 /* RESULTAT */
-.res{border-radius:var(--r);padding:16px;margin-bottom:14px;display:none;}
+.res{border-radius:var(--rd);padding:16px;margin-bottom:12px;display:none;}
 .res-ok{background:#E8F5E9;border:2px solid #66BB6A;}
-.res-adv{background:var(--al);border:2px solid var(--amb);}
-.res-stop{background:var(--rl);border:2px solid var(--red);}
-.res-ikon{font-size:40px;text-align:center;display:block;margin-bottom:8px;}
-.res-titel{font-family:'Fredoka One',cursive;font-size:24px;text-align:center;margin-bottom:6px;}
+.res-adv{background:var(--yl);border:2px solid var(--y);}
+.res-stop{background:var(--rl);border:2px solid var(--r);}
+.res-ikon{font-size:40px;text-align:center;display:block;margin-bottom:6px;}
+.res-titel{font-family:'Fredoka One',cursive;font-size:23px;text-align:center;margin-bottom:6px;}
 .res-ok .res-titel{color:#2E7D32;}
 .res-adv .res-titel{color:#B45309;}
-.res-stop .res-titel{color:var(--red);}
-.res-txt{font-size:14px;line-height:1.6;margin-bottom:10px;}
-.adv-item{background:rgba(0,0,0,0.06);border-radius:6px;padding:6px 10px;font-size:13px;margin-bottom:4px;}
+.res-stop .res-titel{color:var(--r);}
+.res-forklaring{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.adv-item{background:rgba(0,0,0,0.06);border-radius:6px;padding:6px 10px;font-size:13px;margin-bottom:3px;}
+.adv-item.kendt{background:#FFEBEE;color:#B71C1C;font-weight:700;}
 .pnavn{font-weight:800;font-size:15px;margin-bottom:4px;}
-.ing-txt{font-size:11px;color:var(--mut);line-height:1.5;padding:8px;background:rgba(0,0,0,0.03);border-radius:6px;max-height:80px;overflow-y:auto;margin-top:6px;}
-.gem-w{display:none;margin-bottom:14px;}
+.ing-wrap{margin-top:8px;}
+.ing-label{font-size:11px;font-weight:800;color:var(--m);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;}
+.ing-txt{font-size:12px;color:var(--m);line-height:1.6;padding:8px;background:rgba(0,0,0,0.03);border-radius:6px;max-height:100px;overflow-y:auto;}
+.enum-wrap{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;}
+.enum-tag{font-size:11px;background:#E3F2FD;color:#0D47A1;padding:2px 8px;border-radius:10px;font-weight:700;}
+.kendt-adv{background:#FFEBEE;border:1.5px solid #FFCDD2;border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:13px;color:#B71C1C;font-weight:700;}
+.gem-w{display:none;margin-bottom:12px;}
+.markering-w{display:none;background:var(--c);border-radius:var(--rd);padding:14px;border:1px solid var(--b);margin-bottom:12px;}
+.mark-titel{font-weight:800;font-size:14px;margin-bottom:10px;}
+.mark-row{display:flex;gap:8px;}
 
 /* LOADING */
 .load{text-align:center;padding:28px;display:none;}
-.spin{display:inline-block;width:30px;height:30px;border:3px solid var(--gm);border-top-color:var(--green);border-radius:50%;animation:spin 0.7s linear infinite;margin-bottom:10px;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.load p{font-size:14px;color:var(--mut);}
+.spin{display:inline-block;width:28px;height:28px;border:3px solid var(--gm);border-top-color:var(--g);border-radius:50%;animation:sp 0.7s linear infinite;margin-bottom:8px;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.load p{font-size:14px;color:var(--m);}
 
 /* REAKTION */
-.reak-w{display:none;background:var(--card);border-radius:var(--r);padding:16px;border:1px solid var(--bdr);margin-bottom:14px;}
-.reak-in{width:100%;border:1.5px solid var(--bdr);border-radius:8px;padding:10px;font-family:'Nunito',sans-serif;font-size:14px;margin-bottom:8px;resize:vertical;}
-.alv-row{display:flex;gap:8px;margin-bottom:10px;}
-.alv{flex:1;padding:8px;border:2px solid var(--bdr);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:var(--mut);}
-.alv.on{border-color:var(--red);background:var(--rl);color:var(--red);}
+.rw{display:none;background:var(--c);border-radius:var(--rd);padding:14px;border:1px solid var(--b);margin-bottom:12px;}
+.rin{width:100%;border:1.5px solid var(--b);border-radius:8px;padding:10px;font-family:'Nunito',sans-serif;font-size:14px;margin-bottom:8px;resize:vertical;}
+.alvrow{display:flex;gap:8px;margin-bottom:8px;}
+.alv{flex:1;padding:8px;border:2px solid var(--b);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:var(--m);}
+.alv.on{border-color:var(--r);background:var(--rl);color:var(--r);}
+.ocr-in{width:100%;min-height:80px;border:1.5px solid var(--b);border-radius:8px;padding:10px;font-family:'Nunito',sans-serif;font-size:13px;margin-bottom:8px;resize:vertical;}
 
 /* LISTE */
-.fam-bar{background:var(--gl);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;font-size:12px;}
-.fam-id{font-weight:700;color:var(--gd);}
-.kopi-btn{background:var(--green);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;}
-.l-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
-.l-titel{font-family:'Fredoka One',cursive;font-size:20px;color:var(--gd);}
-.pk{background:var(--card);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;border:1px solid var(--bdr);box-shadow:0 2px 6px rgba(0,0,0,0.04);}
-.pk.reak{border-left:4px solid var(--red);}
-.pk-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
-.pk-navn{font-weight:800;font-size:15px;}
-.badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;}
-.b-ok{background:#E8F5E9;color:#2E7D32;}
-.b-adv{background:var(--al);color:#B45309;}
-.b-stop{background:var(--rl);color:var(--red);}
-.pk-dato{font-size:11px;color:var(--mut);margin-bottom:6px;}
-.rtag{font-size:11px;background:var(--rl);color:var(--red);padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:6px;font-weight:700;}
-.tom{text-align:center;padding:40px 20px;color:var(--mut);}
-.tom-e{font-size:48px;display:block;margin-bottom:12px;}
-.ana-k{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:14px;border:1px solid var(--bdr);display:none;}
-.ana-t{font-family:'Fredoka One',cursive;font-size:18px;color:var(--gd);margin-bottom:12px;}
-.syn-i{background:var(--rl);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:14px;color:var(--red);font-weight:600;}
-.sam-i{background:var(--al);border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:13px;color:#92400E;}
-.anb{background:var(--gl);border-radius:8px;padding:12px;margin-top:10px;font-size:14px;color:var(--gd);line-height:1.6;}
-.ocr-in{width:100%;min-height:80px;border:1.5px solid var(--bdr);border-radius:8px;padding:10px;font-family:'Nunito',sans-serif;font-size:13px;margin-bottom:8px;resize:vertical;}
+.fbar{background:var(--gl);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.fid{font-weight:700;color:var(--gd);font-size:13px;}
+.kbtn{background:var(--g);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;}
+.lhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.ltit{font-family:'Fredoka One',cursive;font-size:20px;color:var(--gd);}
+.pk{background:var(--c);border-radius:var(--rd);padding:13px 15px;margin-bottom:10px;border:1px solid var(--b);box-shadow:0 2px 6px rgba(0,0,0,0.04);position:relative;}
+.pk.m-gul{border-left:5px solid var(--y);}
+.pk.m-roed{border-left:5px solid var(--r);}
+.pk-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
+.pk-navn{font-weight:800;font-size:14px;flex:1;margin-right:8px;}
+.mbadge{font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.mb-ingen{background:#f0f0f0;color:#666;}
+.mb-gul{background:#FFFBEB;color:#B45309;border:1px solid #F59E0B;}
+.mb-roed{background:#FFEBEE;color:#B71C1C;border:1px solid #E53935;}
+.pk-dato{font-size:11px;color:var(--m);margin-bottom:5px;}
+.pk-ing{font-size:12px;color:var(--m);line-height:1.5;margin-bottom:6px;}
+.pk-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.tom{text-align:center;padding:40px 20px;color:var(--m);}
+.tom-e{font-size:44px;display:block;margin-bottom:10px;}
+.akort{background:var(--c);border-radius:var(--rd);padding:14px;margin-bottom:12px;border:1px solid var(--b);display:none;}
+.atit{font-family:'Fredoka One',cursive;font-size:18px;color:var(--gd);margin-bottom:10px;}
+.si{background:var(--rl);border-radius:8px;padding:9px 12px;margin-bottom:7px;font-size:13px;color:var(--r);font-weight:700;}
+.sai{background:var(--yl);border-radius:8px;padding:7px 11px;margin-bottom:5px;font-size:13px;color:#92400E;}
+.anb{background:var(--gl);border-radius:8px;padding:11px;margin-top:8px;font-size:13px;color:var(--gd);line-height:1.6;}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <span class="logo">🌾 Helena <span class="ver">v8</span></span>
+<div class="hdr">
+  <span class="logo">🌾 Helena <span class="ver">v9</span></span>
   <div class="tabs">
     <a href="index.html" class="tab">Madplan</a>
-    <button class="tab on" onclick="skiftSek('scanner',event)">Scanner</button>
-    <button class="tab" onclick="skiftSek('liste',event)">Mine produkter</button>
+    <button class="tab on" onclick="side('scanner',event)">Scanner</button>
+    <button class="tab" onclick="side('liste',event)">Produkter</button>
   </div>
 </div>
 
 <!-- SCANNER -->
-<div class="sec on" id="sek-scanner">
+<div class="pg on" id="pg-scanner">
   <div class="card">
-    <h2>📷 Scan et produkt</h2>
-    <div class="sub">Start kameraet, hold produktet <strong>5–15 cm</strong> fra telefonen, og tryk <strong>Scan nu</strong>.</div>
+    <h2>📷 Scan produkt</h2>
+    <div class="sub">Start kameraet, hold produktet <strong>5–15 cm</strong> fra telefonen og tryk <strong>Scan nu</strong>.</div>
 
-    <div class="cam-wrap" id="camWrap">
+    <div class="cambox" id="cambox">
       <video id="vid" autoplay playsinline muted onclick="tapFokus(event)"></video>
-      <div class="overlay">
+      <div class="ov">
         <div class="skygge"></div>
-        <div class="status-bar"><span class="status-pill" id="statusPill">📷 Starter kamera...</span></div>
+        <div class="stbar"><span class="stpill" id="stpill">📷 Starter...</span></div>
         <div class="ramme" id="ramme">
           <div class="hj tl"></div><div class="hj tr"></div>
           <div class="hj bl"></div><div class="hj br"></div>
           <div class="linje" id="linje"></div>
         </div>
-        <div class="afstand-guide"><span class="afstand-pill">📏 Hold 5–15 cm fra produktet</span></div>
-        <div class="scan-btn-area">
-          <button class="scan-nu" id="scanNuBtn" onclick="startScanning()">📷 Scan nu</button>
-        </div>
+        <div class="afguide"><span class="afpill">📏 5–15 cm fra produktet · tap for fokus</span></div>
+        <div class="sknarea"><button class="sknbtn" id="sknbtn" onclick="startScan()">📷 Scan nu</button></div>
       </div>
     </div>
 
-    <div class="tips on" id="tips">
-      📏 <b>Afstand:</b> Hold telefonen 5–15 cm fra stregkoden<br>
-      💡 <b>Lys:</b> God belysning — ingen skygger på produktet<br>
-      🤚 <b>Stabil:</b> Hold telefonen helt stille når du scanner<br>
-      ↔️ <b>Retning:</b> Stregkoden vandret i midten af rammen
+    <div class="tips" id="tips">
+      📏 <b>Afstand:</b> Hold 5–15 cm fra stregkoden<br>
+      💡 <b>Lys:</b> God belysning — ingen skygger<br>
+      🤚 <b>Stabil:</b> Hold telefonen helt stille<br>
+      👆 <b>Tap:</b> Tryk på skærmen for at fokusere
     </div>
 
     <button class="btn btn-g" id="startBtn" onclick="startKamera()">📷 Start stregkode-scanner</button>
@@ -174,7 +185,7 @@ h2{font-family:'Fredoka One',cursive;font-size:22px;color:var(--gd);margin-botto
     <button class="btn btn-o" onclick="document.getElementById('fotoInput').click()">📸 Foto af ingrediensliste</button>
     <input type="file" id="fotoInput" accept="image/*" capture="environment" onchange="tagFoto(this)">
     <div style="margin-top:10px">
-      <div style="font-size:12px;color:var(--mut);margin-bottom:4px;font-weight:700">Eller skriv/indsæt ingredienser:</div>
+      <div style="font-size:12px;color:var(--m);margin-bottom:4px;font-weight:700">Skriv/indsæt ingredienser:</div>
       <textarea class="ocr-in" id="manIn" placeholder="Ingredienser: hvede, sukker, palmeolie..."></textarea>
       <button class="btn btn-o" onclick="tjekManuel()">🔍 Tjek ingredienser</button>
     </div>
@@ -182,23 +193,38 @@ h2{font-family:'Fredoka One',cursive;font-size:22px;color:var(--gd);margin-botto
 
   <div class="load" id="loadBox"><div class="spin"></div><p id="loadTxt">Analyserer...</p></div>
 
+  <div class="kendt-adv" id="kendtAdv" style="display:none">⚠️ <span id="kendtTxt"></span></div>
+
   <div class="res" id="resBox">
     <span class="res-ikon" id="resIkon"></span>
     <div class="res-titel" id="resTitel"></div>
     <div class="pnavn" id="resPnavn"></div>
-    <div class="res-txt" id="resTxt"></div>
+    <div class="res-forklaring" id="resTxt"></div>
     <div id="resAdv"></div>
-    <details style="margin-top:8px"><summary style="font-size:12px;color:var(--mut);cursor:pointer">Vis ingredienser</summary><div class="ing-txt" id="resIng"></div></details>
+    <div class="ing-wrap">
+      <div class="ing-label">Ingredienser</div>
+      <div class="ing-txt" id="resIng"></div>
+      <div class="enum-wrap" id="resEnum"></div>
+    </div>
   </div>
 
   <div class="gem-w" id="gemW">
     <button class="btn btn-g" onclick="gemProdukt()">✓ Gem i min produktliste</button>
   </div>
 
-  <div class="reak-w" id="reakW">
-    <div style="font-weight:800;font-size:15px;margin-bottom:12px">🚨 Registrer reaktion</div>
-    <textarea class="reak-in" id="sympIn" placeholder="Hvad skete der? (fx mavepine, udslæt, kløe...)"></textarea>
-    <div class="alv-row">
+  <div class="markering-w" id="markW">
+    <div class="mark-titel">🏷️ Marker dette produkt:</div>
+    <div class="mark-row">
+      <button class="btn btn-g btn-s" onclick="markerNy('ingen')">✓ Sikkert</button>
+      <button class="btn btn-y btn-s" onclick="markerNy('gul')">⚠️ Mistænkt</button>
+      <button class="btn btn-r btn-s" onclick="markerNy('roed')">🚫 Farligt</button>
+    </div>
+  </div>
+
+  <div class="rw" id="reakW">
+    <div style="font-weight:800;font-size:14px;margin-bottom:10px">🚨 Registrer reaktion</div>
+    <textarea class="rin" id="sympIn" placeholder="Hvad skete der? (fx mavepine, udslæt, kløe...)"></textarea>
+    <div class="alvrow">
       <button class="alv" onclick="vaelgAlv('mild',this)">Mild</button>
       <button class="alv" onclick="vaelgAlv('moderat',this)">Moderat</button>
       <button class="alv" onclick="vaelgAlv('alvorlig',this)">Alvorlig</button>
@@ -208,27 +234,27 @@ h2{font-family:'Fredoka One',cursive;font-size:22px;color:var(--gd);margin-botto
 </div>
 
 <!-- PRODUKTLISTE -->
-<div class="sec" id="sek-liste">
-  <div class="fam-bar">
+<div class="pg" id="pg-liste">
+  <div class="fbar">
     <div>
-      <div style="font-size:11px;color:var(--mut)">Familie-ID (del med familien)</div>
-      <div class="fam-id" id="famId"></div>
+      <div style="font-size:11px;color:var(--m)">Familie-ID</div>
+      <div class="fid" id="famId"></div>
     </div>
-    <button class="kopi-btn" onclick="kopierLink()">Kopier link</button>
+    <button class="kbtn" onclick="kopierLink()">Kopier link</button>
   </div>
-  <div class="l-head">
-    <div class="l-titel">Mine produkter</div>
+  <div class="lhdr">
+    <div class="ltit">Mine produkter</div>
     <button class="btn btn-s btn-o" id="samBtn" style="display:none" onclick="analyserSam()">🔍 Find sammenfald</button>
   </div>
   <div id="pkListe"></div>
-  <div class="ana-k" id="anaK"><div class="ana-t">📊 Reaktionsanalyse</div><div id="anaInd"></div></div>
+  <div class="akort" id="akort"><div class="atit">📊 Reaktionsanalyse</div><div id="aind"></div></div>
 </div>
 
 <!-- GEM-DIALOG -->
 <div id="gemDlg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center;">
-  <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:480px;">
-    <div style="font-family:'Fredoka One',cursive;font-size:20px;color:var(--gd);margin-bottom:8px">✓ Produkt gemt!</div>
-    <p style="font-size:14px;color:var(--mut);margin-bottom:16px">Vil du registrere at dette produkt har givet en reaktion?</p>
+  <div style="background:#fff;border-radius:20px 20px 0 0;padding:22px;width:100%;max-width:480px;">
+    <div style="font-family:'Fredoka One',cursive;font-size:19px;color:var(--gd);margin-bottom:8px">✓ Produkt gemt!</div>
+    <p style="font-size:13px;color:var(--m);margin-bottom:14px">Vil du registrere en reaktion på dette produkt?</p>
     <button class="btn btn-r" onclick="visReakForm()">🚨 Ja, registrer reaktion</button>
     <button class="btn btn-o" onclick="lukDlg()">Nej tak</button>
   </div>
@@ -237,44 +263,43 @@ h2{font-family:'Fredoka One',cursive;font-size:22px;color:var(--gd);margin-botto
 <script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
 <script>
 // --- STATE ---
-const P = new URLSearchParams(location.search);
-let FAM = P.get('familie') || localStorage.getItem('h_fam');
+const UP = new URLSearchParams(location.search);
+let FAM = UP.get('familie') || localStorage.getItem('h_fam');
 if (!FAM) { FAM = 'fam_' + Math.random().toString(36).slice(2,10); localStorage.setItem('h_fam', FAM); }
 document.getElementById('famId').textContent = FAM;
 
-let stream = null, scanTimer = null, scanning = false;
-let aktivRes = null, aktivProdId = null, valgtAlv = 'mild';
+let stream=null, scanTimer=null, scanning=false;
+let aktivRes=null, aktivProdId=null, valgtAlv='mild';
 
 function kopierLink() {
-  navigator.clipboard.writeText(location.origin + location.pathname + '?familie=' + FAM)
-    .then(() => alert('Link kopieret!'));
+  navigator.clipboard.writeText(location.origin+location.pathname+'?familie='+FAM)
+    .then(()=>alert('Link kopieret! Del med familien.'));
 }
 
-function skiftSek(id, e) {
-  document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
-  document.getElementById('sek-' + id).classList.add('on');
-  if (e) e.target.classList.add('on');
-  if (id === 'liste') hentListe();
+function side(id, e) {
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  if(e) e.target.classList.add('on');
+  if(id==='liste') hentListe();
 }
 
 // --- KAMERA ---
 async function startKamera() {
   try {
-    document.getElementById('camWrap').style.display = 'block';
-    document.getElementById('startBtn').style.display = 'none';
-    document.getElementById('stopBtn').style.display = 'block';
-    document.getElementById('tips').classList.remove('on');
-    scanning = false;
+    document.getElementById('cambox').style.display='block';
+    document.getElementById('startBtn').style.display='none';
+    document.getElementById('stopBtn').style.display='block';
+    document.getElementById('tips').style.display='none';
+    scanning=false;
 
-    // Prøv høj opløsning til nærbillede
     try {
       stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { exact: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }
+        video:{ facingMode:{exact:'environment'}, width:{ideal:1920}, height:{ideal:1080} }
       });
     } catch(e) {
       stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+        video:{ facingMode:'environment', width:{ideal:1280}, height:{ideal:720} }
       });
     }
 
@@ -282,29 +307,25 @@ async function startKamera() {
     vid.srcObject = stream;
 
     vid.addEventListener('loadedmetadata', async () => {
-      // Sæt video-højde til samme som bredde (kvadrat)
+      // Sæt kamera-højde
       const w = vid.offsetWidth;
-      document.getElementById('camWrap').style.height = w + 'px';
+      document.getElementById('cambox').style.height = Math.round(w*0.72)+'px';
 
       const track = stream.getVideoTracks()[0];
       if (track && track.getCapabilities) {
         const caps = track.getCapabilities();
-        // Autofokus
         if (caps.focusMode && caps.focusMode.includes('continuous')) {
-          try { await track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }); } catch(e) {}
+          try { await track.applyConstraints({ advanced:[{focusMode:'continuous'}] }); } catch(e) {}
         }
-        // Zoom til 1.5x hvis muligt for bedre nærbillede
         if (caps.zoom && caps.zoom.max >= 1.5) {
-          try { await track.applyConstraints({ advanced: [{ zoom: 1.5 }] }); } catch(e) {}
+          try { await track.applyConstraints({ advanced:[{zoom:1.5}] }); } catch(e) {}
         }
       }
-
       setTimeout(() => {
-        document.getElementById('scanNuBtn').classList.add('on');
-        sætstatus('✅ Klar — tryk Scan nu', true);
-      }, 1000);
-    }, { once: true });
-
+        document.getElementById('sknbtn').classList.add('on');
+        setSt('✅ Klar — tryk Scan nu', 'g');
+      }, 900);
+    }, { once:true });
   } catch(e) {
     alert('Kamera fejl: ' + e.message);
     stopKamera();
@@ -313,260 +334,315 @@ async function startKamera() {
 
 async function tapFokus(e) {
   const ring = document.createElement('div');
-  ring.className = 'fokus-ring';
-  ring.style.cssText = `left:${e.clientX-21}px;top:${e.clientY-21}px;`;
+  ring.className='fring';
+  ring.style.cssText=`left:${e.clientX-20}px;top:${e.clientY-20}px;`;
   document.body.appendChild(ring);
-  setTimeout(() => ring.remove(), 650);
+  setTimeout(()=>ring.remove(), 600);
   if (!stream) return;
   const track = stream.getVideoTracks()[0];
   if (!track || !track.getCapabilities) return;
   try {
     const caps = track.getCapabilities();
     if (caps.focusMode && caps.focusMode.includes('manual') && caps.pointOfInterest) {
-      const r = e.target.getBoundingClientRect();
-      await track.applyConstraints({ advanced: [{ focusMode: 'manual', pointOfInterest: { x: (e.clientX-r.left)/r.width, y: (e.clientY-r.top)/r.height } }] });
-      setTimeout(async () => { try { await track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }); } catch(e) {} }, 3000);
+      const rect = e.target.getBoundingClientRect();
+      await track.applyConstraints({ advanced:[{ focusMode:'manual', pointOfInterest:{ x:(e.clientX-rect.left)/rect.width, y:(e.clientY-rect.top)/rect.height }}] });
+      setTimeout(async()=>{ try{ await track.applyConstraints({advanced:[{focusMode:'continuous'}]}); }catch(e){} }, 3000);
     }
   } catch(e) {}
 }
 
 function stopKamera() {
-  scanning = false;
-  if (scanTimer) { clearInterval(scanTimer); scanTimer = null; }
-  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
-  document.getElementById('camWrap').style.display = 'none';
-  document.getElementById('startBtn').style.display = 'block';
-  document.getElementById('stopBtn').style.display = 'none';
-  document.getElementById('tips').classList.add('on');
-  document.getElementById('scanNuBtn').classList.remove('on');
+  scanning=false;
+  if (scanTimer) { clearInterval(scanTimer); scanTimer=null; }
+  if (stream) { stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  document.getElementById('cambox').style.display='none';
+  document.getElementById('startBtn').style.display='block';
+  document.getElementById('stopBtn').style.display='none';
+  document.getElementById('tips').style.display='block';
+  document.getElementById('sknbtn').classList.remove('on');
   document.getElementById('linje').classList.remove('on');
-  document.getElementById('ramme').classList.remove('fundet');
+  document.getElementById('ramme').className='ramme';
 }
 
-function sætstatus(txt, groen) {
-  const p = document.getElementById('statusPill');
-  p.textContent = txt;
-  groen ? p.classList.add('groen') : p.classList.remove('groen');
+function setSt(txt, cls) {
+  const p=document.getElementById('stpill');
+  p.textContent=txt;
+  p.className='stpill'+(cls?' '+cls:'');
 }
 
-// --- SCAN NU (tager billeder hvert 400ms og prøver ZXing) ---
-async function startScanning() {
+// --- SCAN NU ---
+async function startScan() {
   if (scanning) return;
-  scanning = true;
-  document.getElementById('scanNuBtn').classList.remove('on');
+  scanning=true;
+  document.getElementById('sknbtn').classList.remove('on');
   document.getElementById('linje').classList.add('on');
-  sætstatus('🔍 Scanner stregkode...', false);
+  setSt('🔍 Scanner...', '');
 
-  const vid = document.getElementById('vid');
-  const reader = new ZXing.BrowserMultiFormatReader();
-  const canvas = document.createElement('canvas');
+  const vid=document.getElementById('vid');
+  const reader=new ZXing.BrowserMultiFormatReader();
+  const canvas=document.createElement('canvas');
+  let forsøg=0;
+  const max=25; // 25 x 400ms = 10 sekunder
 
-  let forsøg = 0;
-  const maxForsøg = 20; // 20 x 400ms = 8 sekunder
-
-  scanTimer = setInterval(async () => {
+  scanTimer=setInterval(async()=>{
     if (!scanning) { clearInterval(scanTimer); return; }
     forsøg++;
+    setSt(`🔍 Scanner (${forsøg}/${max})`, '');
 
-    if (forsøg > maxForsøg) {
-      // Timeout — tag foto og send til Claude
+    if (forsøg>=max) {
       clearInterval(scanTimer);
-      scanning = false;
+      scanning=false;
       document.getElementById('linje').classList.remove('on');
-      sætstatus('📸 Tager foto...', false);
-      tagStillbillede(vid);
+      setSt('📸 Ingen stregkode — tager foto...', '');
+      // Foto-fallback
+      canvas.width=vid.videoWidth||1280;
+      canvas.height=vid.videoHeight||720;
+      canvas.getContext('2d').drawImage(vid,0,0);
+      const b64=canvas.toDataURL('image/jpeg',0.95).split(',')[1];
+      stopKamera();
+      visLoad('Analyserer billede med AI...');
+      await sendBillede(b64);
       return;
     }
 
-    // Opdater status
-    sætstatus(`🔍 Scanner... (${forsøg}/${maxForsøg})`, false);
-
-    // Tegn video-frame til canvas
-    canvas.width = vid.videoWidth || 1280;
-    canvas.height = vid.videoHeight || 720;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
-
-    // Prøv at decode
+    canvas.width=vid.videoWidth||1280;
+    canvas.height=vid.videoHeight||720;
+    canvas.getContext('2d').drawImage(vid,0,0,canvas.width,canvas.height);
     try {
-      const result = await reader.decodeFromCanvas(canvas);
-      if (result) {
+      const res=await reader.decodeFromCanvas(canvas);
+      if (res && scanning) {
         clearInterval(scanTimer);
-        scanning = false;
+        scanning=false;
         document.getElementById('linje').classList.remove('on');
         document.getElementById('ramme').classList.add('fundet');
-        sætstatus('✅ Stregkode: ' + result.getText(), true);
-        setTimeout(() => { stopKamera(); scanBarcode(result.getText()); }, 500);
+        const kode=res.getText();
+        setSt('✅ '+kode, 'g');
+        setTimeout(()=>{ stopKamera(); scanBarcode(kode); }, 500);
       }
-    } catch(e) {
-      // Ingen stregkode i dette frame — fortsæt
-    }
+    } catch(e) { /* fortsæt */ }
   }, 400);
 }
 
-function tagStillbillede(vid) {
-  const canvas = document.createElement('canvas');
-  canvas.width = vid.videoWidth || 1280;
-  canvas.height = vid.videoHeight || 720;
-  canvas.getContext('2d').drawImage(vid, 0, 0);
-  const base64 = canvas.toDataURL('image/jpeg', 0.95).split(',')[1];
-  stopKamera();
-  visLoad('Analyserer billede med AI...');
-  sendBillede(base64);
-}
-
-// --- FOTO ---
-function tagFoto(input) {
-  const file = input.files[0];
-  if (!file) return;
-  visLoad('Læser ingrediensliste...');
-  const reader = new FileReader();
-  reader.onload = ev => sendBillede(ev.target.result.split(',')[1]);
-  reader.readAsDataURL(file);
-}
-
-async function sendBillede(base64) {
+// --- API-KALD ---
+async function sendBillede(b64) {
   try {
-    const r = await fetch('/api/scan-billede', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ billede: base64 })
-    });
-    const txt = await r.text(); // Brug text() i stedet for json() for at undgå parse-fejl
-    let data;
-    try { data = JSON.parse(txt); }
-    catch(e) { data = { found: false, besked: 'Serverfejl — prøv igen' }; }
-    visRes(data);
-  } catch(e) { skjulLoad(); alert('Fejl: ' + e.message); }
+    const r=await fetch('/api/scan-billede',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({billede:b64})});
+    const txt=await r.text();
+    let d; try{d=JSON.parse(txt);}catch(e){d={found:false,besked:'Serverfejl — prøv igen'};}
+    visRes(d);
+  } catch(e) { skjulLoad(); alert('Netværksfejl: '+e.message); }
 }
 
 async function scanBarcode(barcode) {
-  visLoad('Slår stregkode op: ' + barcode);
+  visLoad('Slår op: '+barcode+'...');
   try {
-    const r = await fetch('/api/scan', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ barcode })
-    });
-    const txt = await r.text();
-    let data;
-    try { data = JSON.parse(txt); }
-    catch(e) { data = { found: false, besked: 'Produktet ikke fundet i databasen' }; }
-    visRes(data);
-  } catch(e) { skjulLoad(); alert('Fejl: ' + e.message); }
+    const r=await fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({barcode})});
+    const txt=await r.text();
+    let d; try{d=JSON.parse(txt);}catch(e){d={found:false,besked:'Produktet ikke fundet'};}
+    if (!d.found) {
+      // Stregkode ikke i database — tag foto i stedet
+      skjulLoad();
+      setSt('📦 Ikke i database — tag foto af ingredienser', 'r');
+      document.getElementById('startBtn').textContent='📸 Tag foto af ingredienser';
+    } else { visRes(d); }
+  } catch(e) { skjulLoad(); alert('Fejl: '+e.message); }
+}
+
+function tagFoto(input) {
+  const file=input.files[0]; if(!file) return;
+  visLoad('Læser ingrediensliste...');
+  const reader=new FileReader();
+  reader.onload=ev=>sendBillede(ev.target.result.split(',')[1]);
+  reader.readAsDataURL(file);
 }
 
 function tjekManuel() {
-  const tekst = document.getElementById('manIn').value.trim();
-  if (!tekst) { alert('Indsæt ingredienser først'); return; }
-  visLoad('Analyserer ingredienser...');
-  fetch('/api/scan', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ocrText:tekst}) })
-    .then(r => r.text())
-    .then(txt => { let d; try{d=JSON.parse(txt);}catch(e){d={found:false,besked:'Fejl'};} visRes(d); })
-    .catch(e => { skjulLoad(); alert('Fejl: '+e.message); });
+  const txt=document.getElementById('manIn').value.trim();
+  if(!txt){alert('Indsæt ingredienser');return;}
+  visLoad('Analyserer...');
+  fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ocrText:txt})})
+    .then(r=>r.text()).then(txt=>{let d;try{d=JSON.parse(txt);}catch(e){d={found:false,besked:'Fejl'};}visRes(d);})
+    .catch(e=>{skjulLoad();alert('Fejl: '+e.message);});
 }
 
 // --- LOADING / RESULTAT ---
 function visLoad(txt) {
-  document.getElementById('loadTxt').textContent = txt || 'Analyserer...';
-  document.getElementById('loadBox').style.display = 'block';
-  document.getElementById('resBox').style.display = 'none';
-  document.getElementById('gemW').style.display = 'none';
-  document.getElementById('reakW').style.display = 'none';
+  document.getElementById('loadTxt').textContent=txt||'Analyserer...';
+  document.getElementById('loadBox').style.display='block';
+  document.getElementById('resBox').style.display='none';
+  document.getElementById('gemW').style.display='none';
+  document.getElementById('markW').style.display='none';
+  document.getElementById('reakW').style.display='none';
+  document.getElementById('kendtAdv').style.display='none';
 }
-function skjulLoad() { document.getElementById('loadBox').style.display = 'none'; }
+function skjulLoad() { document.getElementById('loadBox').style.display='none'; }
 
 function visRes(data) {
   skjulLoad();
-  if (!data.found) { alert(data.besked || 'Produkt ikke fundet — prøv igen'); return; }
-  aktivRes = data;
-  const a = data.analyse || {};
-  const k = a.karakter || 'ADVARSEL';
-  const box = document.getElementById('resBox');
-  box.className = 'res';
-  if (k==='OK') { box.classList.add('res-ok'); document.getElementById('resIkon').textContent='✅'; }
-  else if (k==='STOP') { box.classList.add('res-stop'); document.getElementById('resIkon').textContent='🚫'; }
-  else { box.classList.add('res-adv'); document.getElementById('resIkon').textContent='⚠️'; }
-  document.getElementById('resTitel').textContent = k==='OK'?'Ser sikker ud!':k==='STOP'?'Spis det ikke!':'Vær forsigtig!';
-  document.getElementById('resPnavn').textContent = data.produktNavn || '';
-  document.getElementById('resTxt').textContent = a.forklaring || '';
-  document.getElementById('resIng').textContent = data.ingredienser || '';
-  const aw = document.getElementById('resAdv');
-  aw.innerHTML = '';
-  [...(a.advarsler||[]),...(a.skjulte_risici||[])].forEach(x => {
-    const el = document.createElement('div'); el.className='adv-item'; el.textContent='⚠ '+x; aw.appendChild(el);
+  if (!data.found) {
+    // Vis fejl-feedback tydeligt
+    document.getElementById('resBox').style.display='block';
+    document.getElementById('resBox').className='res res-adv';
+    document.getElementById('resIkon').textContent='⚠️';
+    document.getElementById('resTitel').textContent='Ikke fundet';
+    document.getElementById('resPnavn').textContent='';
+    document.getElementById('resTxt').textContent=data.besked||'Produktet blev ikke fundet. Prøv igen.';
+    document.getElementById('resAdv').innerHTML='';
+    document.getElementById('resIng').textContent='';
+    document.getElementById('resEnum').innerHTML='';
+    return;
+  }
+
+  aktivRes=data;
+  const a=data.analyse||{};
+  const k=a.karakter||'ADVARSEL';
+  const box=document.getElementById('resBox');
+  box.className='res';
+  if(k==='OK'){box.classList.add('res-ok');document.getElementById('resIkon').textContent='✅';}
+  else if(k==='STOP'){box.classList.add('res-stop');document.getElementById('resIkon').textContent='🚫';}
+  else{box.classList.add('res-adv');document.getElementById('resIkon').textContent='⚠️';}
+
+  document.getElementById('resTitel').textContent=k==='OK'?'Ser sikker ud!':k==='STOP'?'Spis det ikke!':'Vær forsigtig!';
+  document.getElementById('resPnavn').textContent=data.produktNavn||'';
+  document.getElementById('resTxt').textContent=a.forklaring||'';
+  document.getElementById('resIng').textContent=data.ingredienser||'';
+
+  // E-numre
+  const enumWrap=document.getElementById('resEnum');
+  enumWrap.innerHTML='';
+  (data.enumre||[]).forEach(e=>{
+    const tag=document.createElement('span'); tag.className='enum-tag'; tag.textContent=e; enumWrap.appendChild(tag);
   });
-  box.style.display = 'block';
-  document.getElementById('gemW').style.display = 'block';
+
+  // Advarsler
+  const aw=document.getElementById('resAdv'); aw.innerHTML='';
+  const kendte=(a.kendte_matches||[]);
+  kendte.forEach(x=>{
+    const el=document.createElement('div'); el.className='adv-item kendt'; el.textContent='🔴 KENDT PROBLEM: '+x; aw.appendChild(el);
+  });
+  [...(a.advarsler||[]),...(a.skjulte_risici||[])].forEach(x=>{
+    const el=document.createElement('div'); el.className='adv-item'; el.textContent='⚠ '+x; aw.appendChild(el);
+  });
+
+  // Kendte ingredienser advarsel
+  if (kendte.length>0) {
+    document.getElementById('kendtAdv').style.display='block';
+    document.getElementById('kendtTxt').textContent='Dette produkt indeholder ingredienser fra produkter I har haft reaktion på: '+kendte.join(', ');
+  }
+
+  box.style.display='block';
+  document.getElementById('gemW').style.display='block';
+  document.getElementById('markW').style.display='block';
 }
 
-// --- GEM / REAKTION ---
+// --- GEM / MARKERING ---
 async function gemProdukt() {
   if (!aktivRes) return;
   try {
-    const r = await fetch('/api/produkter', { method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ handling:'gem_produkt', familie_id:FAM, produkt:{ barcode:aktivRes.barcode||null, navn:aktivRes.produktNavn||'Ukendt', ingredienser:aktivRes.ingredienser, analyse:aktivRes.analyse }})
+    const r=await fetch('/api/produkter',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({handling:'gem_produkt',familie_id:FAM,produkt:{
+        barcode:aktivRes.barcode||null,
+        navn:aktivRes.produktNavn||'Ukendt produkt',
+        ingredienser:aktivRes.ingredienser,
+        enumre:aktivRes.enumre||[],
+        analyse:aktivRes.analyse
+      }})
     });
-    const d = await r.json();
-    aktivProdId = d.id;
-    document.getElementById('gemW').style.display = 'none';
-    document.getElementById('gemDlg').style.display = 'flex';
-  } catch(e) { alert('Kunne ikke gemme: '+e.message); }
+    const d=await r.json();
+    aktivProdId=d.id;
+    document.getElementById('gemW').style.display='none';
+    document.getElementById('gemDlg').style.display='flex';
+  } catch(e){alert('Kunne ikke gemme: '+e.message);}
 }
-function visReakForm() { document.getElementById('gemDlg').style.display='none'; document.getElementById('reakW').style.display='block'; }
-function lukDlg() { document.getElementById('gemDlg').style.display='none'; }
-function vaelgAlv(v,btn) { valgtAlv=v; document.querySelectorAll('.alv').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
-async function gemReak() {
-  const s = document.getElementById('sympIn').value.trim();
-  if (!s) { alert('Beskriv symptomerne'); return; }
+
+async function markerNy(markering) {
+  if (!aktivProdId) { alert('Gem produktet først'); return; }
   try {
-    await fetch('/api/produkter', { method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ handling:'registrer_reaktion', familie_id:FAM, produkt_id:aktivProdId, reaktion:{symptomer:s,alvorlighed:valgtAlv}})
+    await fetch('/api/produkter',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({handling:'opdater_markering',familie_id:FAM,produkt_id:aktivProdId,markering})
+    });
+    const labels={'ingen':'✓ Markeret som sikkert','gul':'⚠️ Markeret som mistænkt','roed':'🚫 Markeret som farligt'};
+    alert(labels[markering]);
+    document.getElementById('markW').style.display='none';
+  } catch(e){alert('Fejl: '+e.message);}
+}
+
+function visReakForm(){document.getElementById('gemDlg').style.display='none';document.getElementById('reakW').style.display='block';}
+function lukDlg(){document.getElementById('gemDlg').style.display='none';}
+function vaelgAlv(v,btn){valgtAlv=v;document.querySelectorAll('.alv').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+
+async function gemReak() {
+  const s=document.getElementById('sympIn').value.trim();
+  if(!s){alert('Beskriv symptomerne');return;}
+  try {
+    await fetch('/api/produkter',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({handling:'registrer_reaktion',familie_id:FAM,produkt_id:aktivProdId,reaktion:{symptomer:s,alvorlighed:valgtAlv}})
     });
     document.getElementById('reakW').style.display='none';
     document.getElementById('sympIn').value='';
-    alert('Reaktion gemt!');
-  } catch(e) { alert('Fejl: '+e.message); }
+    alert('Reaktion gemt! Produktet er markeret som mistænkt (gul).');
+  } catch(e){alert('Fejl: '+e.message);}
 }
 
 // --- PRODUKTLISTE ---
 async function hentListe() {
-  const c = document.getElementById('pkListe');
-  c.innerHTML = '<div class="load" style="display:block"><div class="spin"></div><p>Henter...</p></div>';
+  const c=document.getElementById('pkListe');
+  c.innerHTML='<div class="load" style="display:block"><div class="spin"></div><p>Henter...</p></div>';
   try {
-    const r = await fetch('/api/produkter?familie_id='+FAM);
-    const list = await r.json();
-    if (!list.length) { c.innerHTML='<div class="tom"><span class="tom-e">📦</span><div style="font-weight:700">Ingen produkter endnu</div><div style="font-size:13px">Scan dit første produkt!</div></div>'; return; }
-    document.getElementById('samBtn').style.display = list.some(p=>p.har_reaktion)?'block':'none';
-    c.innerHTML = list.map(p => {
-      const k = p.analyse_data?.karakter||'ADVARSEL';
-      const bc = k==='OK'?'b-ok':k==='STOP'?'b-stop':'b-adv';
-      const dato = new Date(p.sidst_scannet).toLocaleDateString('da-DK');
-      return `<div class="pk ${p.har_reaktion?'reak':''}">
-        <div class="pk-head"><div class="pk-navn">${p.navn||'Ukendt'}</div><span class="badge ${bc}">${k}</span></div>
-        <div class="pk-dato">Scannet: ${dato}</div>
-        ${p.har_reaktion?'<span class="rtag">⚠ Reaktion registreret</span>':''}
-        <div style="font-size:12px;color:var(--mut);line-height:1.5">${p.analyse_data?.forklaring||''}</div>
-        ${!p.har_reaktion?`<div style="margin-top:8px"><button class="btn btn-s btn-r" onclick="markerReak('${p.id}')">Registrer reaktion</button></div>`:''}
+    const r=await fetch('/api/produkter?familie_id='+FAM);
+    const list=await r.json();
+    if(!list.length){
+      c.innerHTML='<div class="tom"><span class="tom-e">📦</span><div style="font-weight:700">Ingen produkter endnu</div><div style="font-size:13px;margin-top:4px">Scan dit første produkt!</div></div>';
+      return;
+    }
+    const harMarkeret=list.some(p=>p.markering==='roed'||p.markering==='gul');
+    document.getElementById('samBtn').style.display=harMarkeret?'block':'none';
+    c.innerHTML=list.map(p=>{
+      const m=p.markering||'ingen';
+      const mbcls=m==='roed'?'mb-roed':m==='gul'?'mb-gul':'mb-ingen';
+      const mbtxt=m==='roed'?'🚫 Farligt':m==='gul'?'⚠️ Mistænkt':'✓ Sikkert';
+      const dato=new Date(p.sidst_scannet).toLocaleDateString('da-DK');
+      const k=p.analyse_data?.karakter||'';
+      const enumre=(p.enumre||[]).slice(0,5).map(e=>`<span class="enum-tag">${e}</span>`).join('');
+      return `<div class="pk m-${m}">
+        <div class="pk-hdr">
+          <div class="pk-navn">${p.navn||'Ukendt'}</div>
+          <span class="mbadge ${mbcls}">${mbtxt}</span>
+        </div>
+        <div class="pk-dato">Scannet: ${dato}${k?' · AI: '+k:''}</div>
+        <div class="pk-ing">${(p.ingredienser||'').substring(0,120)}${(p.ingredienser||'').length>120?'...':''}</div>
+        ${enumre?`<div class="enum-wrap" style="margin-bottom:6px">${enumre}</div>`:''}
+        <div class="pk-actions">
+          ${m!=='roed'?`<button class="btn btn-r btn-s" onclick="skiftMark('${p.id}','roed')">🚫 Farlig</button>`:''}
+          ${m!=='gul'?`<button class="btn btn-y btn-s" onclick="skiftMark('${p.id}','gul')">⚠️ Mistænkt</button>`:''}
+          ${m!=='ingen'?`<button class="btn btn-g btn-s" onclick="skiftMark('${p.id}','ingen')">✓ Sikkert</button>`:''}
+        </div>
       </div>`;
     }).join('');
-  } catch(e) { c.innerHTML='<div style="color:red;padding:16px">Fejl: '+e.message+'</div>'; }
+  } catch(e){c.innerHTML='<div style="color:red;padding:14px">Fejl: '+e.message+'</div>';}
 }
 
-function markerReak(id) { aktivProdId=id; skiftSek('scanner',null); document.querySelectorAll('.tab')[1].classList.add('on'); document.getElementById('reakW').style.display='block'; }
+async function skiftMark(id, mark) {
+  try {
+    await fetch('/api/produkter',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({handling:'opdater_markering',familie_id:FAM,produkt_id:id,markering:mark})
+    });
+    hentListe();
+  } catch(e){alert('Fejl: '+e.message);}
+}
 
 async function analyserSam() {
-  const k=document.getElementById('anaK'), i=document.getElementById('anaInd');
+  const k=document.getElementById('akort'),i=document.getElementById('aind');
   k.style.display='block';
   i.innerHTML='<div class="load" style="display:block"><div class="spin"></div><p>Analyserer...</p></div>';
   try {
-    const r = await fetch('/api/produkter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({handling:'find_sammenfald',familie_id:FAM})});
-    const d = await r.json(); const s = d.sammenfald||{};
-    i.innerHTML=`${(s.mulige_syndere||[]).map(m=>`<div class="syn-i">🎯 ${m}</div>`).join('')}
-      <div style="font-weight:700;font-size:13px;margin:10px 0 6px;color:var(--mut)">Fælles ingredienser:</div>
-      ${(s.sammenfald||[]).map(x=>`<div class="sam-i">⚠ ${x}</div>`).join('')}
+    const r=await fetch('/api/produkter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({handling:'find_sammenfald',familie_id:FAM})});
+    const d=await r.json(); const s=d.sammenfald||{};
+    i.innerHTML=`${(s.mulige_syndere||[]).map(m=>`<div class="si">🎯 ${m}</div>`).join('')}
+      <div style="font-weight:700;font-size:12px;margin:8px 0 5px;color:var(--m)">Fælles ingredienser:</div>
+      ${(s.sammenfald||[]).map(x=>`<div class="sai">⚠ ${x}</div>`).join('')}
       ${s.anbefaling?`<div class="anb">💡 ${s.anbefaling}</div>`:''}`;
-  } catch(e) { i.innerHTML='<div style="color:red">Fejl: '+e.message+'</div>'; }
+  } catch(e){i.innerHTML='<div style="color:red">Fejl: '+e.message+'</div>';}
 }
 </script>
 <script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>

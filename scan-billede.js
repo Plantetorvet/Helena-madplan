@@ -5,97 +5,78 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-    const { billede } = body;
+    let body;
+    try {
+      body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    } catch(e) {
+      return res.status(400).json({ found: false, besked: 'Ugyldigt request' });
+    }
 
-    // Detekter billedformat
+    const { billede } = body || {};
+    if (!billede || billede.length < 100) {
+      return res.status(400).json({ found: false, besked: 'Intet billede modtaget' });
+    }
+
+    // Billedformat
     let mediaType = 'image/jpeg';
     if (billede.startsWith('iVBOR')) mediaType = 'image/png';
-    else if (billede.startsWith('R0lGOD')) mediaType = 'image/gif';
     else if (billede.startsWith('UklGR')) mediaType = 'image/webp';
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    // Hent kendte problematiske ingredienser fra Supabase hvis tilgængeligt
+    let kendte_problemer = '';
+    try {
+      const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+      const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+      const { data } = await sb.from('produkter').select('navn, ingredienser, markering').in('markering', ['roed', 'gul']);
+      if (data && data.length > 0) {
+        const ing = [...new Set(data.flatMap(p => (p.ingredienser||'').toLowerCase().split(/[,;]/).map(s=>s.trim()).filter(s=>s.length>2)))];
+        kendte_problemer = ing.length > 0 ? `\nKENDTE PROBLEMATISKE INGREDIENSER (fra tidligere reaktioner): ${ing.slice(0,30).join(', ')}` : '';
+      }
+    } catch(e) {}
+
+    const prompt = `Du er allergiekspert. Se på dette produktbillede og analyser ingredienslisten.
+Tjek for: gluten (hvede, rug, byg, spelt, havre, malt, hvedeprotein), mælk (mælk, smør, fløde, valle, kasein, laktose, mælkepulver), soja.
+Husk at notere ALLE E-numre du ser.${kendte_problemer}
+
+Svar KUN med dette JSON - INGEN andre ord eller tegn udenfor JSON:
+{"produktNavn":"produktets navn","ingredienser":"komplet ingrediensliste med alle E-numre","enumre":["E471","E322"],"sikker":true,"advarsler":["advarsel hvis relevant"],"skjulte_risici":["skjult risiko hvis relevant"],"forklaring":"kort forklaring til et barn","karakter":"OK"}
+
+karakter skal være: OK, ADVARSEL eller STOP`;
+
+    const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1000,
-        messages: [{
-          role: 'user',
-          content: [
-            {
-              type: 'image',
-              source: { type: 'base64', media_type: mediaType, data: billede }
-            },
-            {
-              type: 'text',
-              text: `Læs ingredienslisten på dette produktfoto og analyser den.
-Tjek for: gluten (hvede, rug, byg, spelt, havre, malt), mælk (mælk, smør, fløde, valle, kasein, laktose), soja.
-
-Svar UDELUKKENDE med rå JSON - ingen forklaring, ingen markdown, ingen backticks:
-{"ingredienser":"fuld ingrediensliste som tekst","sikker":true,"advarsler":[],"skjulte_risici":[],"forklaring":"Kort forklaring til et barn på 10 år","karakter":"OK"}`
-            }
-          ]
-        }]
+        max_tokens: 1200,
+        messages: [{ role: 'user', content: [
+          { type: 'image', source: { type: 'base64', media_type: mediaType, data: billede } },
+          { type: 'text', text: prompt }
+        ]}]
       })
     });
 
-    const data = await response.json();
-
-    if (data.error) {
-      return res.status(500).json({ error: data.error.message });
+    if (!apiRes.ok) {
+      const errText = await apiRes.text();
+      console.error('Anthropic API fejl:', errText);
+      return res.status(200).json({ found: false, besked: 'AI-tjenesten svarede ikke — prøv igen om lidt' });
     }
 
+    const data = await apiRes.json();
     const rawText = (data.content?.[0]?.text || '').trim();
 
-    // Robust JSON-parsing - prøv flere metoder
     let analyse = null;
-
-    // Metode 1: Direkte parse
     try { analyse = JSON.parse(rawText); } catch(e) {}
-
-    // Metode 2: Fjern markdown-koder
+    if (!analyse) { try { analyse = JSON.parse(rawText.replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim()); } catch(e) {} }
+    if (!analyse) { try { const m = rawText.match(/\{[\s\S]*\}/); if(m) analyse = JSON.parse(m[0]); } catch(e) {} }
     if (!analyse) {
-      try {
-        const cleaned = rawText.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
-        analyse = JSON.parse(cleaned);
-      } catch(e) {}
+      analyse = { produktNavn:'', ingredienser: rawText.substring(0,200), enumre:[], sikker:false, advarsler:['Billedet var utydeligt — prøv med bedre lys og hold 5-15 cm afstand'], skjulte_risici:[], forklaring:'Vi kunne ikke læse ingredienslisten. Tag et nyt foto tæt på, med godt lys og uden skygger.', karakter:'ADVARSEL' };
     }
 
-    // Metode 3: Find JSON-blok med regex
-    if (!analyse) {
-      try {
-        const match = rawText.match(/\{[\s\S]*\}/);
-        if (match) analyse = JSON.parse(match[0]);
-      } catch(e) {}
-    }
-
-    // Fallback hvis alt fejler
-    if (!analyse) {
-      analyse = {
-        ingredienser: rawText,
-        sikker: false,
-        advarsler: ['Kunne ikke analysere billedet korrekt - prøv at tage et klarere foto'],
-        skjulte_risici: [],
-        forklaring: 'Vi kunne ikke læse ingredienslisten tydeligt. Prøv at tage et nyt foto med bedre lys og hold kameraet stille.',
-        karakter: 'ADVARSEL'
-      };
-    }
-
-    return res.status(200).json({
-      found: true,
-      produktNavn: '',
-      ingredienser: analyse.ingredienser || '',
-      kilde: 'foto',
-      fundneForbudte: [],
-      analyse
-    });
+    return res.status(200).json({ found: true, produktNavn: analyse.produktNavn || '', ingredienser: analyse.ingredienser || '', enumre: analyse.enumre || [], kilde: 'foto', fundneForbudte: [], analyse });
 
   } catch(e) {
-    return res.status(500).json({ error: e.message });
+    console.error('scan-billede fejl:', e);
+    return res.status(200).json({ found: false, besked: 'Uventet fejl: ' + e.message });
   }
 }
