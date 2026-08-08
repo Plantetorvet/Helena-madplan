@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     const r = await fetch(SB_URL + '/rest/v1' + path, opts);
     if (!r.ok) {
       const err = await r.text();
-      throw new Error('Supabase fejl ' + r.status + ': ' + err);
+      throw new Error('Supabase ' + r.status + ': ' + err);
     }
     const txt = await r.text();
     return txt ? JSON.parse(txt) : null;
@@ -31,15 +31,16 @@ export default async function handler(req, res) {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
     const { handling, familie_id } = body;
 
+    // GET: hent produktliste
     if (req.method === 'GET') {
       const fid = req.query?.familie_id;
-      const data = await sbFetch(`/produkter?familie_id=eq.${fid}&order=created_at.desc`);
+      const data = await sbFetch(`/produkter?familie_id=eq.${encodeURIComponent(fid)}&order=created_at.desc`);
       return res.status(200).json(data || []);
     }
 
+    // Gem produkt
     if (handling === 'gem_produkt') {
       const { produkt } = body;
-      // Upsert baseret paa familie_id + navn
       const data = await sbFetch('/produkter?on_conflict=familie_id,navn', 'POST', {
         familie_id,
         barcode: produkt.barcode || null,
@@ -53,16 +54,34 @@ export default async function handler(req, res) {
       return res.status(200).json(Array.isArray(data) ? data[0] : data);
     }
 
+    // Opdater markering
     if (handling === 'opdater_markering') {
       const { produkt_id, markering } = body;
-      const data = await sbFetch(
-        `/produkter?id=eq.${produkt_id}`,
-        'PATCH',
-        { markering, har_reaktion: markering !== 'ingen' }
-      );
-      return res.status(200).json(Array.isArray(data) ? data[0] : {ok: true});
+      await sbFetch(`/produkter?id=eq.${produkt_id}`, 'PATCH', {
+        markering,
+        har_reaktion: markering !== 'ingen'
+      });
+      return res.status(200).json({ ok: true });
     }
 
+    // Opdater navn
+    if (handling === 'opdater_navn') {
+      const { produkt_id, navn } = body;
+      await sbFetch(`/produkter?id=eq.${produkt_id}`, 'PATCH', { navn });
+      return res.status(200).json({ ok: true });
+    }
+
+    // Slet produkt
+    if (handling === 'slet_produkt') {
+      const { produkt_id } = body;
+      // Slet reaktioner først
+      await sbFetch(`/reaktioner?produkt_id=eq.${produkt_id}`, 'DELETE');
+      // Slet produkt
+      await sbFetch(`/produkter?id=eq.${produkt_id}`, 'DELETE');
+      return res.status(200).json({ ok: true });
+    }
+
+    // Registrer reaktion
     if (handling === 'registrer_reaktion') {
       const { produkt_id, reaktion } = body;
       await sbFetch('/reaktioner', 'POST', {
@@ -71,10 +90,13 @@ export default async function handler(req, res) {
         symptomer: reaktion.symptomer,
         alvorlighed: reaktion.alvorlighed
       });
-      await sbFetch(`/produkter?id=eq.${produkt_id}`, 'PATCH', { har_reaktion: true, markering: 'gul' });
+      await sbFetch(`/produkter?id=eq.${produkt_id}`, 'PATCH', {
+        har_reaktion: true, markering: 'gul'
+      });
       return res.status(200).json({ ok: true });
     }
 
+    // Find sammenfald
     if (handling === 'find_sammenfald') {
       const rp = await sbFetch(`/produkter?familie_id=eq.${familie_id}&markering=in.(roed,gul)`);
       if (!rp || rp.length === 0) {
