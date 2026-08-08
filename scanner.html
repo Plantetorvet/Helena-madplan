@@ -142,7 +142,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 <body>
 
 <div class="hdr">
-  <span class="logo">🌾 Helena <span class="ver">v12</span></span>
+  <span class="logo">🌾 Helena <span class="ver">v13</span></span>
   <div class="tabs">
     <a href="index.html" class="tab">Madplan</a>
     <button class="tab on" onclick="side('scanner',event)">Scanner</button>
@@ -428,19 +428,23 @@ async function startScan() {
       document.getElementById('linje').classList.remove('on');
       setSt('📸 Ingen stregkode — tager foto...', '');
       // Foto-fallback
-      canvas.width=vid.videoWidth||1280;
-      canvas.height=vid.videoHeight||720;
-      canvas.getContext('2d').drawImage(vid,0,0);
-      const b64=canvas.toDataURL('image/jpeg',0.95).split(',')[1];
+      const MAX_T = 1600;
+      let tw = vid.videoWidth||1280, th = vid.videoHeight||720;
+      if (tw > MAX_T) { th = Math.round(th * MAX_T/tw); tw = MAX_T; }
+      canvas.width=tw; canvas.height=th;
+      canvas.getContext('2d').drawImage(vid,0,0,tw,th);
+      const b64=canvas.toDataURL('image/jpeg',0.88).split(',')[1];
       stopKamera();
       visLoad('Analyserer billede med AI...');
       await sendBillede(b64);
       return;
     }
 
-    canvas.width=vid.videoWidth||1280;
-    canvas.height=vid.videoHeight||720;
-    canvas.getContext('2d').drawImage(vid,0,0,canvas.width,canvas.height);
+    const MAX_SCAN = 1280;
+    let sw = vid.videoWidth||1280, sh = vid.videoHeight||720;
+    if (sw > MAX_SCAN) { sh = Math.round(sh * MAX_SCAN/sw); sw = MAX_SCAN; }
+    canvas.width=sw; canvas.height=sh;
+    canvas.getContext('2d').drawImage(vid,0,0,sw,sh);
     try {
       const res=await reader.decodeFromCanvas(canvas);
       if (res && scanning) {
@@ -484,9 +488,24 @@ async function scanBarcode(barcode) {
 function tagFoto(input) {
   const file=input.files[0]; if(!file) return;
   visLoad('Læser ingrediensliste...');
-  const reader=new FileReader();
-  reader.onload=ev=>sendBillede(ev.target.result.split(',')[1]);
-  reader.readAsDataURL(file);
+  // Skaler billede ned før sending (max 1600px, Anthropic limit)
+  const img = new Image();
+  const url = URL.createObjectURL(file);
+  img.onload = () => {
+    const MAX = 1600;
+    let w = img.width, h = img.height;
+    if (w > MAX || h > MAX) {
+      if (w > h) { h = Math.round(h * MAX/w); w = MAX; }
+      else { w = Math.round(w * MAX/h); h = MAX; }
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(url);
+    const b64 = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+    sendBillede(b64);
+  };
+  img.src = url;
 }
 
 function tjekManuel() {
