@@ -36,7 +36,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 .stpill{background:rgba(0,0,0,0.72);color:#fff;font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;transition:background 0.3s;text-align:center;max-width:90%;}
 .stpill.g{background:rgba(29,158,117,0.92);}
 .stpill.r{background:rgba(229,57,53,0.92);}
-.ramme{width:82%;aspect-ratio:2.5/1;position:relative;z-index:2;margin-top:10px;}
+.ramme{width:94%;aspect-ratio:3/1;position:relative;z-index:2;margin-top:10px;}
 .hj{position:absolute;width:26px;height:26px;border-color:#fff;border-style:solid;transition:border-color 0.3s;}
 .hj.tl{top:0;left:0;border-width:3px 0 0 3px;border-radius:4px 0 0 4px;}
 .hj.tr{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 4px 4px 0;}
@@ -142,7 +142,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 <body>
 
 <div class="hdr">
-  <span class="logo">🌾 Helena <span class="ver">v14</span></span>
+  <span class="logo">🌾 Helena <span class="ver">v15</span></span>
   <div class="tabs">
     <a href="index.html" class="tab">Madplan</a>
     <button class="tab on" onclick="side('scanner',event)">Scanner</button>
@@ -166,13 +166,13 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
           <div class="hj bl"></div><div class="hj br"></div>
           <div class="linje" id="linje"></div>
         </div>
-        <div class="afguide"><span class="afpill">📏 5–15 cm fra produktet · tap skærm for fokus</span></div>
+        <div class="afguide"><span class="afpill">📏 Hold 40-50 cm fra stregkoden · tap for fokus</span></div>
 
       </div>
     </div>
 
     <div class="tips" id="tips">
-      📏 <b>Afstand:</b> Hold 5–15 cm fra stregkoden — brug zoom-slideren<br>
+      📏 <b>Afstand:</b> Hold 40-50 cm fra stregkoden — kameraet fokuserer bedst her<br>
       💡 <b>Lys:</b> God belysning — ingen skygger<br>
       🤚 <b>Stabil:</b> Hold telefonen helt stille<br>
       👆 <b>Tap:</b> Tryk på skærmen for at fokusere
@@ -180,18 +180,22 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 
     <button class="btn btn-g" id="startBtn" onclick="startKamera()">📷 Start stregkode-scanner</button>
     <div id="kameraKontroller" style="display:none;background:#111;border-radius:0 0 16px 16px;padding:10px 14px;margin-bottom:10px;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <span style="color:#9FE1CB;font-size:12px;font-weight:700">🔍</span>
-        <input type="range" id="zoomSlider" min="1" max="5" step="0.1" value="1.5" oninput="setZoom(this.value)" style="flex:1;accent-color:#1D9E75;height:4px;">
-        <span id="zoomVal" style="color:#fff;font-size:12px;font-weight:800;min-width:32px;text-align:right">1.5x</span>
-        <button onclick="stopKamera()" style="background:rgba(255,255,255,0.12);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">✕</button>
+      <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
+        <div style="flex:1;color:#9FE1CB;font-size:12px;line-height:1.5;">
+          📏 Hold <b>40-50 cm</b> fra produktet<br>
+          👆 Tap på billedet for at fokusere
+        </div>
+        <button onclick="stopKamera()" style="background:rgba(255,255,255,0.12);color:#fff;border:none;border-radius:6px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">✕ Luk</button>
       </div>
-      <button id="sknbtn" onclick="startScan()" style="width:100%;padding:12px;font-size:16px;font-weight:800;border-radius:12px;border:none;background:#1D9E75;color:#fff;cursor:pointer;font-family:'Nunito',sans-serif;">
+      <button id="sknbtn" onclick="startScan()" style="width:100%;padding:14px;font-size:17px;font-weight:800;border-radius:12px;border:none;background:#1D9E75;color:#fff;cursor:pointer;font-family:'Nunito',sans-serif;letter-spacing:0.3px;">
         📷 Scan nu
       </button>
     </div>
     <div class="eller">eller</div>
-    <button class="btn btn-o" onclick="document.getElementById('fotoInput').click()">📸 Foto af ingrediensliste</button>
+    <button class="btn btn-o" onclick="document.getElementById('fotoInput').click()" style="font-size:15px;padding:15px;">
+      📸 Foto af ingrediensliste
+      <div style="font-size:11px;opacity:0.7;margin-top:2px;">Åbner dit kamera — hold 10-20 cm fra teksten</div>
+    </button>
     <input type="file" id="fotoInput" accept="image/*" capture="environment" onchange="tagFoto(this)">
     <div style="margin-top:10px">
       <div style="font-size:12px;color:var(--m);margin-bottom:4px;font-weight:700">Skriv/indsæt ingredienser:</div>
@@ -335,29 +339,13 @@ async function startKamera() {
         setSt('✅ Klar — tryk Scan nu', 'g');
         // Vis zoom-slider
 
-        // Sæt initial zoom
-        await setZoom(1.5);
+
       }, 900);
     }, { once:true });
   } catch(e) {
     alert('Kamera fejl: ' + e.message);
     stopKamera();
   }
-}
-
-async function setZoom(val) {
-  document.getElementById('zoomVal').textContent = parseFloat(val).toFixed(1)+'x';
-  document.getElementById('zoomSlider').value = val;
-  if (!stream) return;
-  const track = stream.getVideoTracks()[0];
-  if (!track || !track.getCapabilities) return;
-  try {
-    const caps = track.getCapabilities();
-    if (caps.zoom) {
-      const z = Math.min(Math.max(parseFloat(val), caps.zoom.min), caps.zoom.max);
-      await track.applyConstraints({ advanced: [{ zoom: z }] });
-    }
-  } catch(e) {}
 }
 
 async function tapFokus(e) {
