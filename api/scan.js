@@ -23,19 +23,46 @@ export default async function handler(req, res) {
 
     if (!ingredienser && ocrText) ingredienser = ocrText;
     if (!ingredienser) {
-      return res.status(200).json({ found: false, besked: 'Produkt ikke fundet i database. Prøv at tage et foto af ingredienslisten.' });
+      return res.status(200).json({ found: false, besked: 'Produkt ikke fundet. Proev at indsaette ingredienslisten manuelt.' });
     }
 
-    const forbudt = ['hvede','hvedeprotein','rug','byg','spelt','malt','havre','gluten','mælk','skummetmælk','sødmælk','mælkeprotein','valle','kasein','laktose','smøreolie','mælkepulver','soja','sojaprotein','sojalecithin','E1404','E1412','E1413','E1414','E1420','E1422','E1440','E1442','E1450','E1451'];
+  // Hent kendte problematiske ingredienser fra roed/gul markerede produkter
+  let kendteIngredienser = [];
+  try {
+    const sbRes = await fetch(
+      process.env.SUPABASE_URL + '/rest/v1/produkter?markering=in.(roed,gul)&select=ingredienser,enumre,navn',
+      { headers: { 'apikey': process.env.SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + process.env.SUPABASE_ANON_KEY } }
+    );
+    if (sbRes.ok) {
+      const produkter = await sbRes.json();
+      produkter.forEach(p => {
+        if (p.ingredienser) {
+          p.ingredienser.toLowerCase().split(/[,;]/).forEach(i => {
+            const trimmed = i.trim().replace(/[()]/g, '');
+            if (trimmed.length > 2) kendteIngredienser.push(trimmed);
+          });
+        }
+        if (p.enumre) kendteIngredienser.push(...p.enumre.map(e => e.toLowerCase()));
+      });
+      kendteIngredienser = [...new Set(kendteIngredienser)].slice(0, 50);
+    }
+  } catch(e) { /* fortsaet uden kendte */ }
+  const kendteTekst = kendteIngredienser.length > 0
+    ? '\nKENDTE PROBLEMATISKE INGREDIENSER (fra tidligere reaktioner - marker disse som kendte_matches hvis de optræder): ' + kendteIngredienser.join(', ')
+    : '';
+
+    const forbudt = ['hvede','hvedeprotein','rug','byg','spelt','malt','havre','gluten',
+      'maelk','maelk','skummetmaelk','soedmaelk','maelkeprotein','valle','kasein','laktose','smoereolie','maelkepulver',
+      'soja','sojaprotein','sojalecithin','E1404','E1412','E1413','E1414','E1420','E1422','E1440','E1442','E1450','E1451'];
     const fundne = forbudt.filter(f => ingredienser.toLowerCase().includes(f.toLowerCase()));
 
-    const claudePrompt = `Analyser disse ingredienser for glutenallergi og mælkeallergi.
+    const claudePrompt = `Analyser disse ingredienser for glutenallergi og maelkeallergi.
 Produkt: "${produktNavn || 'ukendt'}"
 Ingredienser: "${ingredienser}"
-Allerede fundne problemer: ${fundne.length > 0 ? fundne.join(', ') : 'ingen'}
+Allerede fundne: ${fundne.length > 0 ? fundne.join(', ') : 'ingen'}${kendteTekst}
 
 Svar KUN med JSON:
-{"ingredienser":"${ingredienser.replace(/"/g,"'")}","enumre":["E-numre"],"sikker":true,"advarsler":[],"skjulte_risici":[],"forklaring":"forklaring","karakter":"OK","kendte_matches":[]}`;
+{"ingredienser":"${ingredienser.replace(/"/g,"'")}","enumre":[],"sikker":true,"advarsler":[],"skjulte_risici":[],"forklaring":"forklaring","karakter":"OK","kendte_matches":[]}`;
 
     const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -50,7 +77,7 @@ Svar KUN med JSON:
     if (!analyse) { try { const m = raw.match(/\{[\s\S]*\}/); if(m) analyse = JSON.parse(m[0]); } catch(e) {} }
     if (!analyse) analyse = { ingredienser, enumre:[], sikker:fundne.length===0, advarsler:fundne, skjulte_risici:[], forklaring:'Tjek listen manuelt.', karakter:fundne.length>0?'ADVARSEL':'OK', kendte_matches:[] };
 
-    return res.status(200).json({ found: true, produktNavn: produktNavn||'', ingredienser, enumre: analyse.enumre||[], kilde: barcode?'barcode':'ocr', fundneForbudte: fundne, analyse });
+    return res.status(200).json({ found:true, produktNavn:produktNavn||'', ingredienser, enumre:analyse.enumre||[], kilde:barcode?'barcode':'ocr', fundneForbudte:fundne, analyse });
 
   } catch(e) {
     return res.status(200).json({ found: false, besked: 'Fejl: ' + e.message });
