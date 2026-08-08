@@ -49,10 +49,8 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 @keyframes scan{0%,100%{top:5%;}50%{top:91%;}}
 .afguide{position:absolute;bottom:52px;left:50%;transform:translateX(-50%);z-index:3;white-space:nowrap;}
 .afpill{background:rgba(0,0,0,0.65);color:#fff;font-size:11px;padding:3px 10px;border-radius:14px;}
-.sknarea{position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;z-index:3;pointer-events:auto;}
-.sknbtn{background:rgba(29,158,117,0.95);color:#fff;border:2.5px solid rgba(255,255,255,0.35);border-radius:26px;padding:12px 36px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;opacity:0.35;transform:scale(0.88);transition:all 0.3s;pointer-events:none;}
-.sknbtn.on{opacity:1;transform:scale(1);pointer-events:auto;animation:puls 2s ease-in-out infinite;}
-@keyframes puls{0%,100%{box-shadow:0 3px 14px rgba(0,0,0,0.35);}50%{box-shadow:0 3px 26px rgba(29,158,117,0.7),0 0 0 6px rgba(29,158,117,0.15);}}
+
+.sknbtn{background:var(--g);color:#fff;font-family:'Nunito',sans-serif;font-weight:800;cursor:pointer;}
 .fring{position:fixed;border:2px solid var(--g);border-radius:50%;width:40px;height:40px;pointer-events:none;z-index:999;animation:frd 0.6s forwards;}
 @keyframes frd{0%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(1.7);}}
 
@@ -144,7 +142,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 <body>
 
 <div class="hdr">
-  <span class="logo">🌾 Helena <span class="ver">v11</span></span>
+  <span class="logo">🌾 Helena <span class="ver">v12</span></span>
   <div class="tabs">
     <a href="index.html" class="tab">Madplan</a>
     <button class="tab on" onclick="side('scanner',event)">Scanner</button>
@@ -169,7 +167,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
           <div class="linje" id="linje"></div>
         </div>
         <div class="afguide"><span class="afpill">📏 5–15 cm fra produktet · tap skærm for fokus</span></div>
-        <div class="sknarea"><button class="sknbtn" id="sknbtn" onclick="startScan()">📷 Scan nu</button></div>
+
       </div>
     </div>
 
@@ -183,13 +181,17 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
     <button class="btn btn-g" id="startBtn" onclick="startKamera()">📷 Start stregkode-scanner</button>
     <div id="kameraKontroller" style="display:none">
       <div style="background:#111;border-radius:0 0 16px 16px;padding:10px 14px;margin-bottom:10px;">
-        <div style="display:flex;align-items:center;gap:10px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
           <span style="color:#9FE1CB;font-size:13px;font-weight:700;white-space:nowrap">🔍 Zoom</span>
           <input type="range" id="zoomSlider" min="1" max="5" step="0.1" value="1.5" oninput="setZoom(this.value)"
             style="flex:1;accent-color:#1D9E75;height:6px;">
           <span id="zoomVal" style="color:#fff;font-size:13px;font-weight:800;min-width:36px;text-align:right">1.5x</span>
           <button onclick="stopKamera()" style="background:rgba(255,255,255,0.15);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">✕ Luk</button>
         </div>
+        <button class="sknbtn on" id="sknbtn" onclick="startScan()"
+          style="width:100%;padding:13px;font-size:16px;border-radius:12px;animation:none;opacity:1;transform:none;pointer-events:auto;border:none;">
+          📷 Scan nu
+        </button>
       </div>
     </div>
     <div class="eller">eller</div>
