@@ -23,28 +23,36 @@ export default async function handler(req, res) {
 
   // Hent kendte problematiske ingredienser fra roed/gul markerede produkter
   let kendteIngredienser = [];
+  let kendteNavne = [];
   try {
     const sbRes = await fetch(
-      process.env.SUPABASE_URL + '/rest/v1/produkter?markering=in.(roed,gul)&select=ingredienser,enumre,navn',
+      process.env.SUPABASE_URL + '/rest/v1/produkter?markering=in.(roed,gul)&select=navn,ingredienser,enumre,markering',
       { headers: { 'apikey': process.env.SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + process.env.SUPABASE_ANON_KEY } }
     );
     if (sbRes.ok) {
-      const produkter = await sbRes.json();
-      produkter.forEach(p => {
+      const kendte = await sbRes.json();
+      kendte.forEach(p => {
+        kendteNavne.push({ navn: p.navn, markering: p.markering });
         if (p.ingredienser) {
-          p.ingredienser.toLowerCase().split(/[,;]/).forEach(i => {
-            const trimmed = i.trim().replace(/[()]/g, '');
-            if (trimmed.length > 2) kendteIngredienser.push(trimmed);
+          p.ingredienser.toLowerCase().split(/[,;()\/]/).forEach(i => {
+            const t = i.trim().replace(/[*%]/g, '');
+            if (t.length > 2) kendteIngredienser.push(t);
           });
         }
-        if (p.enumre) kendteIngredienser.push(...p.enumre.map(e => e.toLowerCase()));
+        if (p.enumre) p.enumre.forEach(e => kendteIngredienser.push(e.toLowerCase()));
       });
-      kendteIngredienser = [...new Set(kendteIngredienser)].slice(0, 50);
+      kendteIngredienser = [...new Set(kendteIngredienser)].slice(0, 80);
     }
   } catch(e) { /* fortsaet uden kendte */ }
   const kendteTekst = kendteIngredienser.length > 0
-    ? '\nKENDTE PROBLEMATISKE INGREDIENSER (fra tidligere reaktioner - marker disse som kendte_matches hvis de optræder): ' + kendteIngredienser.join(', ')
+    ? '\nKENDTE PROBLEMATISKE INGREDIENSER (fra produkter familien har reageret paa - ANGIV dem der optræder i kendte_matches): ' + kendteIngredienser.join(', ')
     : '';
+
+  const forbudtListe = `FORBUDTE ingredienser (giver STOP):
+Gluten: hvede, hvedemel, hvedeprotein, hvedestivelse, hvedekim, hvedeklid, durumhvede, speltkerner, rug, rugmel, bygmel, byggryn, perlebyg, bygmalt, spelt, malt, maltekstrakt, maltsirup, havre, havregryn, havreklid, gluten, glucosesirup, dextrose, maltodextrin, maltose, semulje, bulgur, couscous, emmer, kamut
+Maelk: maelk, mælk, skummetmælk, sødmælk, mælkeprotein, mælkebestanddele, mælketørstof, tørmælk, valle, valleprotein, kasein, kaliumkaseinat, natriumkaseinat, laktose, smøreolie, smøraroma, fløde, inddampet mælk, mælkepulver, skummetmælkspulver, sødmælkspulver
+Soja: soja, sojamælk, sojaprotein, sojalecithin, tofu, edamame
+E-numre: E1404, E1412, E1413, E1414, E1420, E1422, E1440, E1442, E1450, E1451`;
 
   let rawText = '';
   try {
@@ -56,7 +64,15 @@ export default async function handler(req, res) {
         max_tokens: 1024,
         messages: [{ role: 'user', content: [
           { type: 'image', source: { type: 'base64', media_type: mediaType, data: billede } },
-          { type: 'text', text: 'Find ingredienslisten paa dette produkt. Tjek for gluten (hvede, rug, byg, spelt, havre, malt) og maelk (maelk, smoer, floede, valle, kasein, laktose, maelkepulver) og soja.' + kendteTekst + '\n\nSvar KUN med JSON uden tekst udenfor:\n{"produktNavn":"","ingredienser":"","enumre":[],"sikker":true,"advarsler":[],"skjulte_risici":[],"forklaring":"","karakter":"OK","kendte_matches":[]}\n\nkarakter = OK, ADVARSEL eller STOP' }
+          { type: 'text', text: `Find ingredienslisten paa dette produkt og analyser det.
+
+${forbudtListe}
+${kendteTekst}
+
+Svar KUN med JSON uden tekst udenfor:
+{"produktNavn":"","ingredienser":"komplet liste","enumre":["E-numre"],"sikker":false,"advarsler":["advarsel"],"skjulte_risici":[],"forklaring":"forklaring til barn","karakter":"STOP","kendte_matches":["kendte ingredienser"]}
+
+karakter = OK, ADVARSEL eller STOP` }
         ]}]
       })
     });
@@ -76,12 +92,14 @@ export default async function handler(req, res) {
   if (!analyse) { try { const m = rawText.match(/\{[\s\S]*\}/); if(m) analyse = JSON.parse(m[0]); } catch(e) {} }
   if (!analyse) {
     analyse = { produktNavn:'', ingredienser:'', enumre:[], sikker:false,
-      advarsler:['Billedet var utydeligt - proev med bedre lys'], skjulte_risici:[],
-      forklaring:'Tag et nyt foto tæt paa med godt lys.', karakter:'ADVARSEL', kendte_matches:[] };
+      advarsler:['Billedet var utydeligt - proev igen med bedre lys'],
+      skjulte_risici:[], forklaring:'Tag et nyt foto tæt paa med godt lys.', karakter:'ADVARSEL', kendte_matches:[] };
   }
 
+  if (!analyse.kendte_matches) analyse.kendte_matches = [];
+
   return res.status(200).json({
-    found: true, produktNavn: analyse.produktNavn||'', ingredienser: analyse.ingredienser||'',
-    enumre: analyse.enumre||[], kilde: 'foto', fundneForbudte: [], analyse
+    found: true, produktNavn: analyse.produktNavn || '', ingredienser: analyse.ingredienser || '',
+    enumre: analyse.enumre || [], kilde: 'foto', fundneForbudte: [], analyse
   });
 }
