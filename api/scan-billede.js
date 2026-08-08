@@ -3,33 +3,27 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(200).json({ found: false, besked: 'Kun POST' });
 
+  // Parse body sikkert
+  let billede;
   try {
-    let body;
-    try {
-      body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-    } catch(e) {
-      return res.status(200).json({ found: false, besked: 'Ugyldigt request' });
-    }
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    billede = body?.billede;
+  } catch(e) {
+    return res.status(200).json({ found: false, besked: 'Parse fejl: ' + e.message });
+  }
 
-    const { billede } = body || {};
-    if (!billede || billede.length < 100) {
-      return res.status(200).json({ found: false, besked: 'Intet billede modtaget' });
-    }
+  if (!billede || billede.length < 50) {
+    return res.status(200).json({ found: false, besked: 'Intet billede' });
+  }
 
-    let mediaType = 'image/jpeg';
-    if (billede.startsWith('iVBOR')) mediaType = 'image/png';
-    else if (billede.startsWith('UklGR')) mediaType = 'image/webp';
+  // Detect format
+  let mediaType = 'image/jpeg';
+  if (billede.startsWith('iVBOR')) mediaType = 'image/png';
 
-    const prompt = `Du er allergiekspert. Kig på dette produktbillede og find ingredienslisten.
-Tjek omhyggeligt for: gluten (hvede, rug, byg, spelt, havre, malt), mælk (mælk, smør, fløde, valle, kasein, laktose, mælkepulver), soja.
-Notér ALLE E-numre du kan se.
-
-Svar KUN med dette JSON - absolut ingen tekst udenfor JSON-objektet:
-{"produktNavn":"navn her","ingredienser":"komplet liste","enumre":["E471"],"sikker":true,"advarsler":[],"skjulte_risici":[],"forklaring":"kort forklaring","karakter":"OK","kendte_matches":[]}
-
-karakter = OK, ADVARSEL eller STOP`;
-
+  let rawText = '';
+  try {
     const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -39,58 +33,67 @@ karakter = OK, ADVARSEL eller STOP`;
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1200,
+        max_tokens: 1024,
         messages: [{
           role: 'user',
           content: [
-            { type: 'image', source: { type: 'base64', media_type: mediaType, data: billede } },
-            { type: 'text', text: prompt }
+            {
+              type: 'image',
+              source: { type: 'base64', media_type: mediaType, data: billede }
+            },
+            {
+              type: 'text',
+              text: 'Find ingredienslisten på dette produkt. Tjek for gluten og mælk. Svar KUN med JSON uden nogen tekst udenfor: {"produktNavn":"","ingredienser":"","enumre":[],"sikker":true,"advarsler":[],"skjulte_risici":[],"forklaring":"","karakter":"OK","kendte_matches":[]}'
+            }
           ]
         }]
       })
     });
 
     if (!apiRes.ok) {
-      const errText = await apiRes.text();
-      return res.status(200).json({ found: false, besked: 'AI fejlede (' + apiRes.status + ') — prøv igen' });
+      const err = await apiRes.text();
+      return res.status(200).json({ found: false, besked: 'API svarede: ' + apiRes.status + ' — ' + err.substring(0, 100) });
     }
 
     const data = await apiRes.json();
-    const rawText = (data.content?.[0]?.text || '').trim();
-
-    let analyse = null;
-    try { analyse = JSON.parse(rawText); } catch(e) {}
-    if (!analyse) {
-      try { analyse = JSON.parse(rawText.replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim()); } catch(e) {}
-    }
-    if (!analyse) {
-      try { const m = rawText.match(/\{[\s\S]*\}/); if(m) analyse = JSON.parse(m[0]); } catch(e) {}
-    }
-    if (!analyse) {
-      analyse = {
-        produktNavn: '',
-        ingredienser: rawText.substring(0, 300) || 'Kunne ikke læse',
-        enumre: [],
-        sikker: false,
-        advarsler: ['Billedet var utydeligt — prøv med bedre lys og hold 5-15 cm afstand'],
-        skjulte_risici: [],
-        forklaring: 'Vi kunne ikke læse ingredienslisten tydeligt. Prøv igen med bedre lys, tæt på teksten.',
-        karakter: 'ADVARSEL',
-        kendte_matches: []
-      };
-    }
-
-    return res.status(200).json({
-      found: true,
-      produktNavn: analyse.produktNavn || '',
-      ingredienser: analyse.ingredienser || '',
-      enumre: analyse.enumre || [],
-      kilde: 'foto',
-      fundneForbudte: [],
-      analyse
-    });
+    rawText = (data.content?.[0]?.text || '').trim();
 
   } catch(e) {
-    return res.status(200).json({ found: false, besked: 'Fejl: ' + e.message });
+    return res.status(200).json({ found: false, besked: 'Netværksfejl: ' + e.message });
   }
+
+  // Parse JSON - 3 metoder
+  let analyse = null;
+  try { analyse = JSON.parse(rawText); } catch(e) {}
+  if (!analyse) {
+    try { analyse = JSON.parse(rawText.replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim()); } catch(e) {}
+  }
+  if (!analyse) {
+    try { const m = rawText.match(/\{[\s\S]*?\}/); if(m) analyse = JSON.parse(m[0]); } catch(e) {}
+  }
+
+  // Fallback
+  if (!analyse) {
+    analyse = {
+      produktNavn: '',
+      ingredienser: rawText.substring(0, 200) || '',
+      enumre: [],
+      sikker: false,
+      advarsler: ['Billedet var utydeligt — prøv med bedre lys og hold 5-15 cm afstand'],
+      skjulte_risici: [],
+      forklaring: 'Prøv igen med godt lys og hold telefonen stille.',
+      karakter: 'ADVARSEL',
+      kendte_matches: []
+    };
+  }
+
+  return res.status(200).json({
+    found: true,
+    produktNavn: analyse.produktNavn || '',
+    ingredienser: analyse.ingredienser || '',
+    enumre: analyse.enumre || [],
+    kilde: 'foto',
+    fundneForbudte: [],
+    analyse
+  });
 }
