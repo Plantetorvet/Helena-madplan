@@ -145,7 +145,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 <body>
 
 <div class="hdr">
-  <span class="logo">🌾 Helena <span class="ver">v16</span></span>
+  <span class="logo">🌾 Helena <span class="ver">v17</span></span>
   <div class="tabs">
     <a href="index.html" class="tab">Madplan</a>
     <button class="tab on" onclick="side('scanner',event)">Scanner</button>
@@ -157,7 +157,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 <div class="pg on" id="pg-scanner">
   <div class="card">
     <h2>📷 Scan produkt</h2>
-    <div class="sub">Start kameraet, hold produktet <strong>5–15 cm</strong> fra telefonen og tryk <strong>Scan nu</strong>.</div>
+    <div class="sub">Scan stregkode eller tag foto af ingredienslisten — AI tjekker det for dig!</div>
 
     <div class="cambox" id="cambox">
       <video id="vid" autoplay playsinline muted onclick="tapFokus(event)"></video>
@@ -283,9 +283,47 @@ const UP = new URLSearchParams(location.search);
 let FAM = UP.get('familie') || localStorage.getItem('h_fam');
 if (!FAM) { FAM = 'fam_' + Math.random().toString(36).slice(2,10); localStorage.setItem('h_fam', FAM); }
 document.getElementById('famId').textContent = FAM;
+tjekLensResultat();
 
 let stream=null, scanTimer=null, scanning=false;
 let aktivRes=null, aktivProdId=null, valgtAlv='mild';
+
+function aabneGoogleLens() {
+  // Forsøg at åbne Google Lens app direkte
+  const isAndroid = /android/i.test(navigator.userAgent);
+  const isIOS = /iphone|ipad/i.test(navigator.userAgent);
+  
+  if (isAndroid) {
+    // Android: prøv Google Lens intent
+    window.location = 'intent://lens.google.com/v3/batchoperate#Intent;scheme=https;package=com.google.android.googlequicksearchbox;end';
+    // Fallback efter 1 sekund
+    setTimeout(() => {
+      window.open('https://lens.google.com', '_blank');
+    }, 1000);
+  } else if (isIOS) {
+    // iPhone: Google Lens er i Google-appen eller Chrome
+    window.open('https://lens.google.com', '_blank');
+  } else {
+    window.open('https://lens.google.com', '_blank');
+  }
+}
+
+// Modtag resultat fra Google Lens via URL-parameter
+function tjekLensResultat() {
+  const params = new URLSearchParams(location.search);
+  const lensData = params.get('lens_result');
+  if (lensData) {
+    visLoad('Analyserer Lens-resultat...');
+    fetch('/api/scan', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ocrText: decodeURIComponent(lensData)})
+    }).then(r=>r.text()).then(txt=>{
+      let d; try{d=JSON.parse(txt);}catch(e){d={found:false,besked:'Fejl'};}
+      visRes(d);
+    });
+  }
+}
 
 function kopierLink() {
   navigator.clipboard.writeText(location.origin+location.pathname+'?familie='+FAM)
