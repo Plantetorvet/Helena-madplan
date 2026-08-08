@@ -28,32 +28,36 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t);min-hei
 .pg.on{display:block;}
 .card{background:var(--c);border-radius:var(--rd);padding:18px;margin-bottom:12px;border:1px solid var(--b);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
 h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-bottom:4px;}
-.sub{font-size:13px;color:var(--m);margin-bottom:16px;line-height:1.5;}
-.lens-card{background:linear-gradient(135deg,#4285F4 0%,#34A853 100%);border-radius:var(--rd);padding:22px 18px;margin-bottom:14px;text-align:center;color:#fff;box-shadow:0 4px 16px rgba(66,133,244,0.3);}
-.lens-ikon{font-size:52px;display:block;margin-bottom:10px;}
-.lens-titel{font-family:'Fredoka One',cursive;font-size:24px;margin-bottom:6px;}
-.lens-sub{font-size:13px;opacity:0.9;margin-bottom:18px;line-height:1.6;}
-.lens-btn{background:#fff;color:#4285F4;border:none;border-radius:26px;padding:14px 32px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;width:100%;box-shadow:0 3px 12px rgba(0,0,0,0.2);transition:transform 0.1s;}
-.lens-btn:active{transform:scale(0.97);}
-.lens-hint{font-size:11px;opacity:0.8;margin-top:8px;}
-.paste-box{background:var(--c);border-radius:var(--rd);border:2.5px dashed var(--g);padding:16px;margin-bottom:12px;}
-.paste-titel{font-size:13px;font-weight:800;color:var(--gd);margin-bottom:8px;}
-.paste-input{width:100%;min-height:110px;border:none;background:transparent;font-family:'Nunito',sans-serif;font-size:14px;color:var(--t);resize:vertical;outline:none;line-height:1.6;}
-.paste-input::placeholder{color:#bbb;}
-.navn-input{width:100%;border:1.5px solid var(--gm);border-radius:8px;padding:9px 12px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--t);margin-bottom:10px;background:var(--gl);}
-.navn-input::placeholder{color:#999;font-weight:400;}
+.sub{font-size:13px;color:var(--m);margin-bottom:14px;line-height:1.5;}
+/* LENS */
+.lens-card{background:linear-gradient(135deg,#4285F4,#34A853);border-radius:var(--rd);padding:20px 18px;margin-bottom:14px;color:#fff;box-shadow:0 4px 16px rgba(66,133,244,0.3);}
+.lens-hdr{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.lens-ikon{font-size:36px;}
+.lens-titel{font-family:'Fredoka One',cursive;font-size:20px;}
+.lens-steps{font-size:13px;opacity:0.95;line-height:2;margin-bottom:14px;padding-left:4px;}
+.lens-steps span{background:rgba(255,255,255,0.2);border-radius:20px;padding:1px 8px;margin-right:4px;font-weight:700;}
+.lens-btn{background:#fff;color:#4285F4;border:none;border-radius:24px;padding:13px 28px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;width:100%;box-shadow:0 3px 12px rgba(0,0,0,0.2);}
+/* FORMULAR */
+.felt-label{font-size:12px;font-weight:800;color:var(--gd);margin-bottom:5px;display:block;}
+.navn-in{width:100%;border:1.5px solid var(--gm);border-radius:8px;padding:9px 12px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--t);margin-bottom:12px;background:var(--gl);}
+.navn-in::placeholder{color:#aaa;font-weight:400;}
+.ing-in{width:100%;min-height:100px;border:1.5px solid var(--b);border-radius:8px;padding:10px;font-family:'Nunito',sans-serif;font-size:13px;color:var(--t);resize:vertical;outline:none;line-height:1.6;margin-bottom:10px;}
+.ing-in::placeholder{color:#bbb;}
 .eller{text-align:center;color:var(--m);font-size:12px;font-weight:700;margin:10px 0;position:relative;}
 .eller::before,.eller::after{content:"";position:absolute;top:50%;width:40%;height:1px;background:var(--b);}
 .eller::before{left:0;}.eller::after{right:0;}
+/* KNAPPER */
 .btn{width:100%;padding:13px;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.15s;margin-bottom:8px;}
 .btn-g{background:var(--g);color:#fff;box-shadow:0 3px 10px rgba(29,158,117,0.3);}
 .btn-g:hover{background:var(--gp);}
 .btn-o{background:#fff;color:var(--g);border:2px solid var(--g);}
 .btn-r{background:var(--r);color:#fff;}
 .btn-y{background:var(--y);color:#fff;}
-.btn-s{padding:7px 13px;width:auto;font-size:12px;border-radius:20px;margin-bottom:0;}
-.btn-slet{background:#fff;color:var(--r);border:1.5px solid var(--r);padding:6px 12px;width:auto;font-size:12px;border-radius:20px;margin-bottom:0;}
+.btn-s{padding:7px 12px;width:auto;font-size:12px;border-radius:20px;margin-bottom:0;}
+.btn-slet{background:#fff;color:var(--r);border:1.5px solid var(--r);padding:6px 12px;width:auto;font-size:12px;border-radius:20px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;}
+.btn-edit{background:#fff;color:#666;border:1.5px solid #ddd;padding:6px 12px;width:auto;font-size:12px;border-radius:20px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;}
 #fotoInput{display:none;}
+/* RESULTAT */
 .res{border-radius:var(--rd);padding:16px;margin-bottom:12px;display:none;}
 .res-ok{background:#E8F5E9;border:2px solid #66BB6A;}
 .res-adv{background:var(--yl);border:2px solid var(--y);}
@@ -65,8 +69,8 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 .res-stop .res-titel{color:var(--r);}
 .res-forklaring{font-size:14px;line-height:1.6;margin-bottom:8px;}
 .adv-item{background:rgba(0,0,0,0.06);border-radius:6px;padding:6px 10px;font-size:13px;margin-bottom:3px;}
-.adv-item.kendt{background:#FFEBEE;color:#B71C1C;font-weight:700;border-left:3px solid var(--r);}
-.adv-item.stop{background:#FFEBEE;color:#B71C1C;font-weight:700;}
+.adv-item.kendt{background:#FFEBEE;color:#B71C1C;font-weight:700;border-left:3px solid var(--r);padding-left:8px;}
+.adv-item.stop{background:#FFEBEE;color:#B71C1C;}
 .pnavn{font-weight:800;font-size:16px;margin-bottom:4px;}
 .ing-label{font-size:11px;font-weight:800;color:var(--m);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;margin-top:8px;}
 .ing-txt{font-size:12px;color:var(--m);line-height:1.6;padding:8px;background:rgba(0,0,0,0.03);border-radius:6px;max-height:100px;overflow-y:auto;}
@@ -74,7 +78,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 .enum-tag{font-size:11px;background:#E3F2FD;color:#0D47A1;padding:2px 8px;border-radius:10px;font-weight:700;}
 .gem-w{display:none;margin-bottom:12px;}
 .mark-w{display:none;background:var(--c);border-radius:var(--rd);padding:14px;border:1px solid var(--b);margin-bottom:12px;}
-.mark-row{display:flex;gap:8px;margin-top:8px;}
+.mark-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
 .load{text-align:center;padding:28px;display:none;}
 .spin{display:inline-block;width:28px;height:28px;border:3px solid var(--gm);border-top-color:var(--g);border-radius:50%;animation:sp 0.7s linear infinite;margin-bottom:8px;}
 @keyframes sp{to{transform:rotate(360deg);}}
@@ -85,8 +89,8 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 .alv{flex:1;padding:8px;border:2px solid var(--b);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:var(--m);}
 .alv.on{border-color:var(--r);background:var(--rl);color:var(--r);}
 .fbar{background:var(--gl);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
-.fid{font-weight:700;color:var(--gd);font-size:13px;}
-.kbtn{background:var(--g);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;}
+.fid{font-weight:700;color:var(--gd);font-size:12px;word-break:break-all;}
+.kbtn{background:var(--g);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;margin-left:8px;}
 .lhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 .ltit{font-family:'Fredoka One',cursive;font-size:20px;color:var(--gd);}
 .pk{background:var(--c);border-radius:var(--rd);padding:13px 15px;margin-bottom:10px;border:1px solid var(--b);box-shadow:0 2px 6px rgba(0,0,0,0.04);}
@@ -108,15 +112,16 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 .si{background:var(--rl);border-radius:8px;padding:9px 12px;margin-bottom:7px;font-size:13px;color:var(--r);font-weight:700;}
 .sai{background:var(--yl);border-radius:8px;padding:7px 11px;margin-bottom:5px;font-size:13px;color:#92400E;}
 .anb{background:var(--gl);border-radius:8px;padding:11px;margin-top:8px;font-size:13px;color:var(--gd);line-height:1.6;}
-.kendt-adv{background:var(--rl);border:1.5px solid #FFCDD2;border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:13px;color:#B71C1C;font-weight:700;display:none;}
-/* Slet bekræftelse */
-.slet-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:flex-end;justify-content:center;}
-.slet-box{background:#fff;border-radius:20px 20px 0 0;padding:22px;width:100%;max-width:480px;}
+.kendt-adv{background:var(--rl);border:2px solid #EF9A9A;border-radius:8px;padding:12px;margin-bottom:8px;font-size:14px;color:#B71C1C;font-weight:700;display:none;line-height:1.5;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:flex-end;justify-content:center;}
+.modal-box{background:#fff;border-radius:20px 20px 0 0;padding:22px;width:100%;max-width:480px;}
+.modal-titel{font-family:'Fredoka One',cursive;font-size:19px;margin-bottom:8px;}
+.modal-sub{font-size:13px;color:var(--m);margin-bottom:14px;}
 </style>
 </head>
 <body>
 <div class="hdr">
-  <span class="logo">🌾 Helena <span class="ver">v19</span></span>
+  <span class="logo">🌾 Helena <span class="ver">v20</span></span>
   <div class="tabs">
     <a href="index.html" class="tab">Madplan</a>
     <button class="tab on" onclick="side('scanner',event)">Scanner</button>
@@ -128,33 +133,31 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 <div class="pg on" id="pg-scanner">
   <div class="card">
     <h2>🔍 Scan produkt</h2>
-    <div class="sub">Scan stregkode eller ingrediensliste med Google Lens — AI tjekker om produktet er sikkert.</div>
+    <div class="sub">Brug Google Lens til at læse ingredienslisten — AI tjekker alt automatisk.</div>
 
     <div class="lens-card">
-      <span class="lens-ikon">🔍</span>
-      <div class="lens-titel">Google Lens</div>
-      <div class="lens-sub">
-        Hold telefonen <strong>10 cm</strong> fra produktet.<br>
-        Scan stregkode eller ingrediensliste.<br>
-        Vælg al tekst → Kopier → indsæt herunder.
+      <div class="lens-hdr">
+        <span class="lens-ikon">🔍</span>
+        <div class="lens-titel">Google Lens</div>
+      </div>
+      <div class="lens-steps">
+        <span>1</span> Tryk Åbn Google Lens<br>
+        <span>2</span> Hold 10 cm fra produktet<br>
+        <span>3</span> Tryk på tekst → Vælg alt → Kopier<br>
+        <span>4</span> Gå tilbage → Indsæt herunder
       </div>
       <button class="lens-btn" onclick="aabneGoogleLens()">🔍 Åbn Google Lens</button>
-      <div class="lens-hint">Åbner Google Lens på din telefon</div>
     </div>
 
-    <div class="paste-box">
-      <div class="paste-titel">📝 Produktnavn:</div>
-      <input type="text" class="navn-input" id="produktNavn" placeholder="Fx: Havregrød fra Urtekram...">
-      <div class="paste-titel">📋 Indsæt ingrediensliste fra Lens:</div>
-      <textarea class="paste-input" id="manIn" placeholder="Indsæt den kopierede tekst her...&#10;&#10;Eks: Ingredienser: sukker, palmeolie, E471, hvedemel..."></textarea>
-      <button class="btn btn-g" onclick="tjekManuel()" style="margin-top:8px;">🔍 Analysér nu</button>
-    </div>
+    <label class="felt-label">📝 Produktnavn (udfyldes automatisk):</label>
+    <input type="text" class="navn-in" id="produktNavn" placeholder="Fx: Havregrød Naturli...">
 
-    <div class="eller">eller tag et foto direkte</div>
-    <button class="btn btn-o" onclick="document.getElementById('fotoInput').click()">
-      📸 Foto af ingrediensliste
-    </button>
-    <div style="font-size:12px;color:var(--m);text-align:center;margin-top:-4px;margin-bottom:10px;">AI læser teksten fra billedet automatisk</div>
+    <label class="felt-label">📋 Ingrediensliste fra Google Lens:</label>
+    <textarea class="ing-in" id="manIn" placeholder="Indsæt den kopierede tekst her...&#10;&#10;Eks: Ingredienser: havregryn, sukker, palmeolie..."></textarea>
+    <button class="btn btn-g" onclick="tjekManuel()">🔍 Analysér ingredienser</button>
+
+    <div class="eller">eller tag et foto</div>
+    <button class="btn btn-o" onclick="document.getElementById('fotoInput').click()">📸 Foto af ingrediensliste</button>
     <input type="file" id="fotoInput" accept="image/*" capture="environment" onchange="tagFoto(this)">
   </div>
 
@@ -201,10 +204,10 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 <div class="pg" id="pg-liste">
   <div class="fbar">
     <div>
-      <div style="font-size:11px;color:var(--m)">Familie-ID</div>
+      <div style="font-size:11px;color:var(--m)">Familie-ID (del med familien)</div>
       <div class="fid" id="famId"></div>
     </div>
-    <button class="kbtn" onclick="kopierLink()">Kopier link</button>
+    <button class="kbtn" onclick="kopierLink()">Del link</button>
   </div>
   <div class="lhdr">
     <div class="ltit">Mine produkter</div>
@@ -214,39 +217,54 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
   <div class="akort" id="akort"><div class="atit">📊 Reaktionsanalyse</div><div id="aind"></div></div>
 </div>
 
-<!-- GEM-DIALOG -->
-<div id="gemDlg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center;">
-  <div style="background:#fff;border-radius:20px 20px 0 0;padding:22px;width:100%;max-width:480px;">
-    <div style="font-family:'Fredoka One',cursive;font-size:19px;color:var(--gd);margin-bottom:8px">✓ Produkt gemt!</div>
-    <p style="font-size:13px;color:var(--m);margin-bottom:14px">Vil du registrere en reaktion på dette produkt?</p>
+<!-- GEM DIALOG -->
+<div class="modal" id="gemDlg">
+  <div class="modal-box">
+    <div class="modal-titel" style="color:var(--gd)">✓ Produkt gemt!</div>
+    <div class="modal-sub">Vil du registrere en reaktion på dette produkt?</div>
     <button class="btn btn-r" onclick="visReakForm()">🚨 Ja, registrer reaktion</button>
-    <button class="btn btn-o" onclick="lukDlg()">Nej tak</button>
+    <button class="btn btn-o" onclick="lukModal('gemDlg')">Nej tak</button>
   </div>
 </div>
 
-<!-- SLET-DIALOG -->
-<div class="slet-modal" id="sletDlg">
-  <div class="slet-box">
-    <div style="font-family:'Fredoka One',cursive;font-size:19px;color:var(--r);margin-bottom:8px">🗑️ Slet produkt?</div>
-    <p style="font-size:13px;color:var(--m);margin-bottom:6px" id="sletNavn"></p>
-    <p style="font-size:12px;color:var(--r);margin-bottom:16px">Dette kan ikke fortrydes — reaktioner slettes også.</p>
-    <button class="btn btn-r" onclick="bekraeftSlet()">Ja, slet produktet</button>
-    <button class="btn btn-o" onclick="document.getElementById('sletDlg').style.display='none'">Annuller</button>
+<!-- SLET DIALOG -->
+<div class="modal" id="sletDlg">
+  <div class="modal-box">
+    <div class="modal-titel" style="color:var(--r)">🗑️ Slet produkt?</div>
+    <div class="modal-sub" id="sletTekst"></div>
+    <p style="font-size:12px;color:var(--r);margin-bottom:14px">Reaktioner slettes også — kan ikke fortrydes.</p>
+    <button class="btn btn-r" onclick="bekraeftSlet()">Ja, slet</button>
+    <button class="btn btn-o" onclick="lukModal('sletDlg')">Annuller</button>
+  </div>
+</div>
+
+<!-- OMDØB DIALOG -->
+<div class="modal" id="omdoebDlg">
+  <div class="modal-box">
+    <div class="modal-titel" style="color:var(--gd)">✏️ Omdøb produkt</div>
+    <input type="text" class="navn-in" id="nytNavn" placeholder="Nyt produktnavn..." style="margin-top:8px;">
+    <button class="btn btn-g" onclick="bekraeftOmdoeb()">Gem navn</button>
+    <button class="btn btn-o" onclick="lukModal('omdoebDlg')">Annuller</button>
   </div>
 </div>
 
 <script>
+// Familie-ID — bevar eksisterende
 const UP = new URLSearchParams(location.search);
-let FAM = UP.get('familie') || localStorage.getItem('h_fam');
-if (!FAM) { FAM = 'fam_' + Math.random().toString(36).slice(2,10); localStorage.setItem('h_fam', FAM); }
+let FAM = UP.get('familie') || localStorage.getItem('helena_familie_id') || localStorage.getItem('h_fam');
+if (!FAM) { FAM = 'fam_' + Math.random().toString(36).slice(2,10); }
+localStorage.setItem('helena_familie_id', FAM);
+localStorage.setItem('h_fam', FAM);
 document.getElementById('famId').textContent = FAM;
 
-let aktivRes=null, aktivProdId=null, valgtAlv='mild', sletId=null;
+let aktivRes=null, aktivProdId=null, valgtAlv='mild', sletId=null, omdoebId=null;
 
 function kopierLink() {
   navigator.clipboard.writeText(location.origin+location.pathname+'?familie='+FAM)
-    .then(()=>alert('Link kopieret!'));
+    .then(()=>alert('Link kopieret! Del det med din familie.'));
 }
+
+function lukModal(id) { document.getElementById(id).style.display='none'; }
 
 function side(id, e) {
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
@@ -256,6 +274,7 @@ function side(id, e) {
   if(id==='liste') hentListe();
 }
 
+// Google Lens
 function aabneGoogleLens() {
   const isAndroid = /android/i.test(navigator.userAgent);
   if (isAndroid) {
@@ -266,89 +285,78 @@ function aabneGoogleLens() {
   }
 }
 
-// Udtræk produktnavn automatisk fra tekst
+// Auto-udtræk produktnavn fra tekst
 function udtraekNavn(tekst) {
-  const linjer = tekst.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-  // Prøv at finde produktnavn - typisk første linje eller linje før "Ingredienser:"
-  for (let i = 0; i < Math.min(3, linjer.length); i++) {
+  const linjer = tekst.split('\n').map(l=>l.trim()).filter(l=>l.length>1);
+  for (let i=0; i<Math.min(4, linjer.length); i++) {
     const l = linjer[i];
-    // Spring over linjer der starter med "Ingredienser", e-numre, eller er meget lange
-    if (!l.match(/^ingredienser|^indeholder|^E\d{3}|^\*/i) && l.length < 60 && l.length > 2) {
-      return l;
+    if (!l.match(/^(ingredienser|indhold|indeholder|nærings|allergen|opbevaring|bedst|produceret|e\d{3}|\*|%)/i)
+        && l.length < 80 && l.length > 2 && !l.match(/^\d/)) {
+      return l.replace(/[*_]/g,'').trim();
     }
   }
   return '';
 }
 
+// Foto
 function tagFoto(input) {
-  const file = input.files[0]; if(!file) return;
+  const file=input.files[0]; if(!file) return;
   visLoad('Læser ingrediensliste...');
-  const img = new Image();
-  const url = URL.createObjectURL(file);
-  img.onload = () => {
-    const MAX = 1600;
-    let w = img.width, h = img.height;
-    if (w > MAX || h > MAX) {
-      if (w > h) { h = Math.round(h*MAX/w); w = MAX; }
-      else { w = Math.round(w*MAX/h); h = MAX; }
-    }
-    const canvas = document.createElement('canvas');
-    canvas.width = w; canvas.height = h;
-    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+  const img=new Image(), url=URL.createObjectURL(file);
+  img.onload=()=>{
+    const MAX=1600; let w=img.width, h=img.height;
+    if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}
+    const c=document.createElement('canvas'); c.width=w; c.height=h;
+    c.getContext('2d').drawImage(img,0,0,w,h);
     URL.revokeObjectURL(url);
-    sendBillede(canvas.toDataURL('image/jpeg', 0.85).split(',')[1]);
+    sendBillede(c.toDataURL('image/jpeg',0.85).split(',')[1]);
   };
-  img.src = url;
+  img.src=url;
 }
 
 async function sendBillede(b64) {
   try {
-    const r = await fetch('/api/scan-billede', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({billede:b64})});
-    const txt = await r.text();
+    const r=await fetch('/api/scan-billede',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({billede:b64})});
+    const txt=await r.text();
     let d; try{d=JSON.parse(txt);}catch(e){d={found:false,besked:'Serverfejl — prøv igen'};}
-    // Sæt produktnavn i felt hvis fundet
-    if (d.found && d.produktNavn) {
-      document.getElementById('produktNavn').value = d.produktNavn;
+    if(d.found && d.produktNavn && !document.getElementById('produktNavn').value.trim()) {
+      document.getElementById('produktNavn').value=d.produktNavn;
     }
     visRes(d);
-  } catch(e) { skjulLoad(); alert('Fejl: '+e.message); }
+  } catch(e){skjulLoad();alert('Fejl: '+e.message);}
 }
 
 function tjekManuel() {
-  const txt = document.getElementById('manIn').value.trim();
+  const txt=document.getElementById('manIn').value.trim();
   if(!txt){alert('Indsæt ingredienser først');return;}
-  // Auto-udtræk navn hvis feltet er tomt
-  const navnFelt = document.getElementById('produktNavn');
-  if (!navnFelt.value.trim()) {
-    navnFelt.value = udtraekNavn(txt);
-  }
+  const navnFelt=document.getElementById('produktNavn');
+  if(!navnFelt.value.trim()) navnFelt.value=udtraekNavn(txt);
   visLoad('Analyserer ingredienser...');
-  fetch('/api/scan', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ocrText:txt})})
-    .then(r=>r.text())
-    .then(txt=>{let d;try{d=JSON.parse(txt);}catch(e){d={found:false,besked:'Fejl'};}
-      // Brug produktnavn fra AI hvis feltet er tomt
-      if (d.found && d.produktNavn && !document.getElementById('produktNavn').value.trim()) {
-        document.getElementById('produktNavn').value = d.produktNavn;
+  fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ocrText:txt})})
+    .then(r=>r.text()).then(txt=>{
+      let d; try{d=JSON.parse(txt);}catch(e){d={found:false,besked:'Fejl'};}
+      if(d.found && d.produktNavn && !document.getElementById('produktNavn').value.trim()) {
+        document.getElementById('produktNavn').value=d.produktNavn;
       }
-      visRes(d);})
-    .catch(e=>{skjulLoad();alert('Fejl: '+e.message);});
+      visRes(d);
+    }).catch(e=>{skjulLoad();alert('Fejl: '+e.message);});
 }
 
 function visLoad(txt) {
-  document.getElementById('loadTxt').textContent = txt||'Analyserer...';
-  document.getElementById('loadBox').style.display = 'block';
-  document.getElementById('resBox').style.display = 'none';
-  document.getElementById('gemW').style.display = 'none';
-  document.getElementById('markW').style.display = 'none';
-  document.getElementById('reakW').style.display = 'none';
-  document.getElementById('kendtAdv').style.display = 'none';
+  document.getElementById('loadTxt').textContent=txt||'Analyserer...';
+  document.getElementById('loadBox').style.display='block';
+  document.getElementById('resBox').style.display='none';
+  document.getElementById('gemW').style.display='none';
+  document.getElementById('markW').style.display='none';
+  document.getElementById('reakW').style.display='none';
+  document.getElementById('kendtAdv').style.display='none';
 }
-function skjulLoad() { document.getElementById('loadBox').style.display = 'none'; }
+function skjulLoad(){document.getElementById('loadBox').style.display='none';}
 
 function visRes(data) {
   skjulLoad();
-  const box = document.getElementById('resBox');
-  if (!data.found) {
+  const box=document.getElementById('resBox');
+  if(!data.found){
     box.className='res res-adv'; box.style.display='block';
     document.getElementById('resIkon').textContent='⚠️';
     document.getElementById('resTitel').textContent='Ikke fundet';
@@ -360,35 +368,27 @@ function visRes(data) {
     return;
   }
   aktivRes=data;
-  const a=data.analyse||{};
-  const k=a.karakter||'ADVARSEL';
+  const a=data.analyse||{}, k=a.karakter||'ADVARSEL';
   box.className='res';
   if(k==='OK'){box.classList.add('res-ok');document.getElementById('resIkon').textContent='✅';}
   else if(k==='STOP'){box.classList.add('res-stop');document.getElementById('resIkon').textContent='🚫';}
   else{box.classList.add('res-adv');document.getElementById('resIkon').textContent='⚠️';}
   document.getElementById('resTitel').textContent=k==='OK'?'Ser sikker ud!':k==='STOP'?'Spis det ikke!':'Vær forsigtig!';
-
-  // Vis produktnavn fra AI eller fra felt
-  const navnFelt = document.getElementById('produktNavn').value.trim();
-  document.getElementById('resPnavn').textContent = navnFelt || data.produktNavn || '';
-
+  document.getElementById('resPnavn').textContent=document.getElementById('produktNavn').value.trim()||data.produktNavn||'';
   document.getElementById('resTxt').textContent=a.forklaring||'';
   document.getElementById('resIng').textContent=data.ingredienser||'';
   const ew=document.getElementById('resEnum'); ew.innerHTML='';
   (data.enumre||[]).forEach(e=>{const t=document.createElement('span');t.className='enum-tag';t.textContent=e;ew.appendChild(t);});
   const aw=document.getElementById('resAdv'); aw.innerHTML='';
-  const kendte=(a.kendte_matches||[]);
-  kendte.forEach(x=>{const el=document.createElement('div');el.className='adv-item kendt';el.textContent='🔴 KENDT REAKTION: '+x;aw.appendChild(el);});
+  const kendte=a.kendte_matches||[];
+  kendte.forEach(x=>{const el=document.createElement('div');el.className='adv-item kendt';el.textContent='🔴 KENDT: '+x;aw.appendChild(el);});
   [...(a.advarsler||[]),...(a.skjulte_risici||[])].forEach(x=>{
-    const el=document.createElement('div');
-    el.className='adv-item'+(k==='STOP'?' stop':'');
-    el.textContent='⚠ '+x;
-    aw.appendChild(el);
+    const el=document.createElement('div');el.className='adv-item'+(k==='STOP'?' stop':'');el.textContent='⚠ '+x;aw.appendChild(el);
   });
   if(kendte.length>0){
     const ka=document.getElementById('kendtAdv');
     ka.style.display='block';
-    ka.textContent='⚠️ Indeholder ingredienser fra kendte reaktionsprodukter: '+kendte.join(', ');
+    ka.innerHTML='⚠️ <strong>Advarsel!</strong> Indeholder ingredienser fra kendte reaktionsprodukter:<br>'+kendte.join(', ');
   }
   box.style.display='block';
   document.getElementById('gemW').style.display='block';
@@ -397,19 +397,18 @@ function visRes(data) {
 
 async function gemProdukt() {
   if(!aktivRes) return;
-  const navn = document.getElementById('produktNavn').value.trim() || aktivRes.produktNavn || 'Ukendt produkt';
+  const navn=document.getElementById('produktNavn').value.trim()||aktivRes.produktNavn||'Ukendt produkt';
   try {
     const r=await fetch('/api/produkter',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({handling:'gem_produkt',familie_id:FAM,produkt:{
-        barcode:null, navn, ingredienser:aktivRes.ingredienser,
-        enumre:aktivRes.enumre||[], analyse:aktivRes.analyse
+        barcode:null,navn,ingredienser:aktivRes.ingredienser,enumre:aktivRes.enumre||[],analyse:aktivRes.analyse
       }})});
     const d=await r.json();
     if(d.error) throw new Error(d.error);
     aktivProdId=d.id;
     document.getElementById('gemW').style.display='none';
     document.getElementById('gemDlg').style.display='flex';
-  } catch(e){alert('Kunne ikke gemme: '+e.message);}
+  } catch(e){alert('Fejl ved gem: '+e.message);}
 }
 
 async function markerNy(m) {
@@ -418,13 +417,11 @@ async function markerNy(m) {
     await fetch('/api/produkter',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({handling:'opdater_markering',familie_id:FAM,produkt_id:aktivProdId,markering:m})});
     const l={'ingen':'✓ Markeret som sikkert','gul':'⚠️ Markeret som mistænkt','roed':'🚫 Markeret som farligt'};
-    alert(l[m]);
-    document.getElementById('markW').style.display='none';
+    alert(l[m]); document.getElementById('markW').style.display='none';
   } catch(e){alert('Fejl: '+e.message);}
 }
 
-function visReakForm(){document.getElementById('gemDlg').style.display='none';document.getElementById('reakW').style.display='block';}
-function lukDlg(){document.getElementById('gemDlg').style.display='none';}
+function visReakForm(){lukModal('gemDlg');document.getElementById('reakW').style.display='block';}
 function vaelgAlv(v,btn){valgtAlv=v;document.querySelectorAll('.alv').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
 
 async function gemReak() {
@@ -439,7 +436,7 @@ async function gemReak() {
   } catch(e){alert('Fejl: '+e.message);}
 }
 
-// --- PRODUKTLISTE ---
+// Produktliste
 async function hentListe() {
   const c=document.getElementById('pkListe');
   c.innerHTML='<div class="load" style="display:block"><div class="spin"></div><p>Henter...</p></div>';
@@ -457,9 +454,10 @@ async function hentListe() {
       const mt=m==='roed'?'🚫 Farligt':m==='gul'?'⚠️ Mistænkt':'✓ Sikkert';
       const dato=new Date(p.sidst_scannet).toLocaleDateString('da-DK');
       const enumre=(p.enumre||[]).slice(0,5).map(e=>`<span class="enum-tag">${e}</span>`).join('');
+      const navn=p.navn||'Ukendt';
       return `<div class="pk m-${m}">
         <div class="pk-hdr">
-          <div class="pk-navn">${p.navn||'Ukendt'}</div>
+          <div class="pk-navn">${navn}</div>
           <span class="mbadge ${mc}">${mt}</span>
         </div>
         <div class="pk-dato">Scannet: ${dato}</div>
@@ -469,14 +467,15 @@ async function hentListe() {
           ${m!=='roed'?`<button class="btn btn-r btn-s" onclick="skiftMark('${p.id}','roed')">🚫 Farlig</button>`:''}
           ${m!=='gul'?`<button class="btn btn-y btn-s" onclick="skiftMark('${p.id}','gul')">⚠️ Mistænkt</button>`:''}
           ${m!=='ingen'?`<button class="btn btn-g btn-s" onclick="skiftMark('${p.id}','ingen')">✓ Sikkert</button>`:''}
-          <button class="btn-slet" onclick="visSletDlg('${p.id}','${(p.navn||'dette produkt').replace(/'/g,"\\'")}')">🗑️ Slet</button>
+          <button class="btn-edit" onclick="visOmdoeb('${p.id}','${navn.replace(/'/g,"\\'").replace(/"/g,'\\"')}')">✏️ Omdøb</button>
+          <button class="btn-slet" onclick="visSlet('${p.id}','${navn.replace(/'/g,"\\'").replace(/"/g,'\\"')}')">🗑️ Slet</button>
         </div>
       </div>`;
     }).join('');
   } catch(e){c.innerHTML='<div style="color:red;padding:14px">Fejl: '+e.message+'</div>';}
 }
 
-async function skiftMark(id, m) {
+async function skiftMark(id,m) {
   try {
     await fetch('/api/produkter',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({handling:'opdater_markering',familie_id:FAM,produkt_id:id,markering:m})});
@@ -484,20 +483,37 @@ async function skiftMark(id, m) {
   } catch(e){alert('Fejl: '+e.message);}
 }
 
-function visSletDlg(id, navn) {
-  sletId = id;
-  document.getElementById('sletNavn').textContent = 'Vil du slette "' + navn + '"?';
-  document.getElementById('sletDlg').style.display = 'flex';
+function visSlet(id,navn) {
+  sletId=id;
+  document.getElementById('sletTekst').textContent='Sletter "'+navn+'"';
+  document.getElementById('sletDlg').style.display='flex';
 }
 
 async function bekraeftSlet() {
   if(!sletId) return;
-  document.getElementById('sletDlg').style.display = 'none';
+  lukModal('sletDlg');
   try {
     await fetch('/api/produkter',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({handling:'slet_produkt',familie_id:FAM,produkt_id:sletId})});
-    sletId = null;
-    hentListe();
+    sletId=null; hentListe();
+  } catch(e){alert('Fejl: '+e.message);}
+}
+
+function visOmdoeb(id,navn) {
+  omdoebId=id;
+  document.getElementById('nytNavn').value=navn;
+  document.getElementById('omdoebDlg').style.display='flex';
+  setTimeout(()=>document.getElementById('nytNavn').focus(),100);
+}
+
+async function bekraeftOmdoeb() {
+  const navn=document.getElementById('nytNavn').value.trim();
+  if(!navn){alert('Skriv et navn');return;}
+  lukModal('omdoebDlg');
+  try {
+    await fetch('/api/produkter',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({handling:'opdater_navn',familie_id:FAM,produkt_id:omdoebId,navn})});
+    omdoebId=null; hentListe();
   } catch(e){alert('Fejl: '+e.message);}
 }
 
