@@ -28,7 +28,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 .sub{font-size:13px;color:var(--m);margin-bottom:14px;line-height:1.5;}
 
 /* KAMERA */
-.cambox{position:relative;background:#111;border-radius:16px;overflow:hidden;margin-bottom:10px;display:none;}
+.cambox{position:relative;background:#111;border-radius:16px;overflow:hidden;margin-bottom:0;display:none;}
 #vid{width:100%;display:block;}
 .ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
 .skygge{position:absolute;inset:0;background:rgba(0,0,0,0.45);}
@@ -111,12 +111,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 .alvrow{display:flex;gap:8px;margin-bottom:8px;}
 .alv{flex:1;padding:8px;border:2px solid var(--b);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:var(--m);}
 .alv.on{border-color:var(--r);background:var(--rl);color:var(--r);}
-.zoombar{position:absolute;bottom:52px;left:10px;right:10px;z-index:3;display:none;}
-.zoombar.vis{display:block;}
-.zoom-row{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,0.6);border-radius:20px;padding:6px 12px;}
-.zoom-row label{color:#fff;font-size:11px;font-weight:700;white-space:nowrap;}
-.zoom-row input{flex:1;accent-color:#1D9E75;}
-.zoom-val{color:#9FE1CB;font-size:11px;font-weight:800;min-width:28px;text-align:right;}
+
 .ocr-in{width:100%;min-height:80px;border:1.5px solid var(--b);border-radius:8px;padding:10px;font-family:'Nunito',sans-serif;font-size:13px;margin-bottom:8px;resize:vertical;}
 
 /* LISTE */
@@ -149,7 +144,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 <body>
 
 <div class="hdr">
-  <span class="logo">🌾 Helena <span class="ver">v10</span></span>
+  <span class="logo">🌾 Helena <span class="ver">v11</span></span>
   <div class="tabs">
     <a href="index.html" class="tab">Madplan</a>
     <button class="tab on" onclick="side('scanner',event)">Scanner</button>
@@ -173,14 +168,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
           <div class="hj bl"></div><div class="hj br"></div>
           <div class="linje" id="linje"></div>
         </div>
-        <div class="zoombar" id="zoombar">
-          <div class="zoom-row">
-            <label>🔍 Zoom</label>
-            <input type="range" id="zoomSlider" min="1" max="5" step="0.1" value="1.5" oninput="setZoom(this.value)">
-            <span class="zoom-val" id="zoomVal">1.5x</span>
-          </div>
-        </div>
-        <div class="afguide"><span class="afpill">📏 5–15 cm · tap for fokus</span></div>
+        <div class="afguide"><span class="afpill">📏 5–15 cm fra produktet · tap skærm for fokus</span></div>
         <div class="sknarea"><button class="sknbtn" id="sknbtn" onclick="startScan()">📷 Scan nu</button></div>
       </div>
     </div>
@@ -193,7 +181,17 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
     </div>
 
     <button class="btn btn-g" id="startBtn" onclick="startKamera()">📷 Start stregkode-scanner</button>
-    <button class="btn btn-o" id="stopBtn" style="display:none" onclick="stopKamera()">✕ Luk kamera</button>
+    <div id="kameraKontroller" style="display:none">
+      <div style="background:#111;border-radius:0 0 16px 16px;padding:10px 14px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="color:#9FE1CB;font-size:13px;font-weight:700;white-space:nowrap">🔍 Zoom</span>
+          <input type="range" id="zoomSlider" min="1" max="5" step="0.1" value="1.5" oninput="setZoom(this.value)"
+            style="flex:1;accent-color:#1D9E75;height:6px;">
+          <span id="zoomVal" style="color:#fff;font-size:13px;font-weight:800;min-width:36px;text-align:right">1.5x</span>
+          <button onclick="stopKamera()" style="background:rgba(255,255,255,0.15);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">✕ Luk</button>
+        </div>
+      </div>
+    </div>
     <div class="eller">eller</div>
     <button class="btn btn-o" onclick="document.getElementById('fotoInput').click()">📸 Foto af ingrediensliste</button>
     <input type="file" id="fotoInput" accept="image/*" capture="environment" onchange="tagFoto(this)">
@@ -302,7 +300,7 @@ async function startKamera() {
   try {
     document.getElementById('cambox').style.display='block';
     document.getElementById('startBtn').style.display='none';
-    document.getElementById('stopBtn').style.display='block';
+    document.getElementById('kameraKontroller').style.display='block';
     document.getElementById('tips').style.display='none';
     scanning=false;
 
@@ -338,8 +336,7 @@ async function startKamera() {
         document.getElementById('sknbtn').classList.add('on');
         setSt('✅ Klar — tryk Scan nu', 'g');
         // Vis zoom-slider
-        const zb = document.getElementById('zoombar');
-        if (zb) zb.classList.add('vis');
+
         // Sæt initial zoom
         await setZoom(1.5);
       }, 900);
@@ -390,9 +387,9 @@ function stopKamera() {
   if (stream) { stream.getTracks().forEach(t=>t.stop()); stream=null; }
   document.getElementById('cambox').style.display='none';
   document.getElementById('startBtn').style.display='block';
-  document.getElementById('stopBtn').style.display='none';
+  document.getElementById('kameraKontroller').style.display='none';
   document.getElementById('tips').style.display='block';
-  document.getElementById('zoombar').classList.remove('vis');
+
   document.getElementById('sknbtn').classList.remove('on');
   document.getElementById('linje').classList.remove('on');
   document.getElementById('ramme').className='ramme';
