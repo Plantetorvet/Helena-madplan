@@ -145,7 +145,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
 <body>
 
 <div class="hdr">
-  <span class="logo">🌾 Helena <span class="ver">v15</span></span>
+  <span class="logo">🌾 Helena <span class="ver">v16</span></span>
   <div class="tabs">
     <a href="index.html" class="tab">Madplan</a>
     <button class="tab on" onclick="side('scanner',event)">Scanner</button>
@@ -169,13 +169,13 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
           <div class="hj bl"></div><div class="hj br"></div>
           <div class="linje" id="linje"></div>
         </div>
-        <div class="afguide"><span class="afpill">📏 Hold 40-50 cm fra stregkoden · tap for fokus</span></div>
+        <div class="afguide"><span class="afpill">📏 Hold ca. 10 cm fra stregkoden · tap for fokus</span></div>
 
       </div>
     </div>
 
     <div class="tips" id="tips">
-      📏 <b>Afstand:</b> Hold 40-50 cm fra stregkoden — kameraet fokuserer bedst her<br>
+      📏 <b>Afstand:</b> Hold ca. 10 cm fra stregkoden<br>
       💡 <b>Lys:</b> God belysning — ingen skygger<br>
       🤚 <b>Stabil:</b> Hold telefonen helt stille<br>
       👆 <b>Tap:</b> Tryk på skærmen for at fokusere
@@ -185,7 +185,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
     <div id="kameraKontroller" style="display:none;background:#111;border-radius:0 0 16px 16px;padding:10px 14px;margin-bottom:10px;">
       <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
         <div style="flex:1;color:#9FE1CB;font-size:12px;line-height:1.5;">
-          📏 Hold <b>40-50 cm</b> fra produktet<br>
+          📏 Hold ca. <b>10 cm</b> fra produktet<br>
           👆 Tap på billedet for at fokusere
         </div>
         <button onclick="stopKamera()" style="background:rgba(255,255,255,0.12);color:#fff;border:none;border-radius:6px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">✕ Luk</button>
@@ -197,7 +197,7 @@ h2{font-family:'Fredoka One',cursive;font-size:21px;color:var(--gd);margin-botto
     <div class="eller">eller</div>
     <button class="btn btn-o" onclick="document.getElementById('fotoInput').click()" style="font-size:15px;padding:15px;">
       📸 Foto af ingrediensliste
-      <div style="font-size:11px;opacity:0.7;margin-top:2px;">Åbner dit kamera — hold 10-20 cm fra teksten</div>
+      <div style="font-size:11px;opacity:0.7;margin-top:2px;">Åbner dit kamera — hold ca. 10 cm fra teksten</div>
     </button>
     <input type="file" id="fotoInput" accept="image/*" capture="environment" onchange="tagFoto(this)">
     <div style="margin-top:10px">
@@ -330,8 +330,15 @@ async function startKamera() {
       const track = stream.getVideoTracks()[0];
       if (track && track.getCapabilities) {
         const caps = track.getCapabilities();
-        if (caps.focusMode && caps.focusMode.includes('continuous')) {
-          try { await track.applyConstraints({ advanced:[{focusMode:'continuous'}] }); } catch(e) {}
+        // Prøv makrofokus til nærbilleder (~10 cm)
+        if (caps.focusMode) {
+          const mode = caps.focusMode.includes('macro') ? 'macro' : 
+                       caps.focusMode.includes('continuous') ? 'continuous' : null;
+          if (mode) try { await track.applyConstraints({ advanced:[{focusMode:mode}] }); } catch(e) {}
+        }
+        // Sæt fokusafstand til minimum (tæt på)
+        if (caps.focusDistance) {
+          try { await track.applyConstraints({ advanced:[{focusDistance: caps.focusDistance.min}] }); } catch(e) {}
         }
         if (caps.zoom && caps.zoom.max >= 1.5) {
           try { await track.applyConstraints({ advanced:[{zoom:1.5}] }); } catch(e) {}
